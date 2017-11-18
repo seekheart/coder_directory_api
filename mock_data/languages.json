@@ -1,0 +1,20 @@
+[
+  {
+    "_id": 1,
+    "language_name": "python",
+    "synonyms": ["py", "python"],
+    "users": [1, 2]
+  },
+  {
+    "_id": 2,
+    "language_name": "javascript",
+    "synonyms": ["js", "java script"],
+    "users": [1]
+  },
+  {
+    "_id": 3,
+    "language_name": "java",
+    "synonyms": ["java", "java8"],
+    "users": [2]
+  }
+]
