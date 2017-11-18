@@ -12,6 +12,9 @@ services:
 before_script:
   - bash mock_data/db_init.sh
 
+script:
+  - echo "success"
+
 notification:
   email:
     on_success: change
