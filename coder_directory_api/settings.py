@@ -11,7 +11,7 @@ import os
 # basic settings
 HOST = os.environ.get('API_URI', '0.0.0.0')
 PORT = os.environ.get('API_PORT', 3000)
-SECRET = os.environ.get('API_SECRET', 'dev_settings.json')
+SECRET = os.environ.get('API_SECRET', 'coder_directory_api/dev_settings.json')
 ENV = os.environ.get('API_ENV', 'DEV')
 
 with open(SECRET, 'r') as s:

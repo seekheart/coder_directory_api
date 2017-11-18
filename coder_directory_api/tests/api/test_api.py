@@ -5,7 +5,7 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 import unittest
-from api import api
+from coder_directory_api import api
 
 
 class ApiTest(unittest.TestCase):

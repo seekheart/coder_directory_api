@@ -6,7 +6,7 @@ MIT License, see LICENSE for details.
 """
 
 import flask
-import settings
+from .settings import *
 
 api = flask.Flask('__name__')
 
