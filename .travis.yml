@@ -11,7 +11,7 @@ services:
 
 before_script:
   - bash mock_data/db_init.sh
-  - cd coder_directory_api
+  - cd $TRAVIS_BUILD_DIR/coder_directory_api
 
 script:
   - nosetests
