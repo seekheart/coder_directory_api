@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# jet brain ide stuff
+.idea
