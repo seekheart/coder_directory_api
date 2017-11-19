@@ -7,12 +7,16 @@ MIT License, see LICENSE for details.
 
 import flask
 import coder_directory_api.settings as settings
+
+
 api = flask.Flask('__name__')
 
 
 @api.route('/')
 def home():
     return 'success!'
+
+
 
 
 if __name__ == '__main__':
