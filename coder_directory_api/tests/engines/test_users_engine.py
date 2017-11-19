@@ -16,7 +16,7 @@ class UsersEngineTest(unittest.TestCase):
         self.dummy_user = {
             '_id': 99999,
             'username': 'dummy',
-            'languages': [1,2,3],
+            'languages': [1, 2, 3],
             'profile': {
                 'bio': 'I\'m pretty',
                 'learning': 'how to be r3alz'

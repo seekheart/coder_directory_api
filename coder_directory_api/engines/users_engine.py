@@ -68,3 +68,16 @@ class UsersEngine(MongoEngine):
 
         self._max_id = self._set_max_id()
         return user['_id']
+
+    def edit_one(self, user_id: int, user_dict: dict) -> bool:
+        """Edits a user"""
+
+        lookup = {'_id': user_id}
+
+        try:
+            self.db.update_one(lookup, {'$set': user_dict})
+            result = True
+        except AttributeError as e:
+            result = False
+
+        return result
