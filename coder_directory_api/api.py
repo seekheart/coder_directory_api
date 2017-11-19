@@ -29,7 +29,11 @@ def users():
         try:
             result = users_engine.add_one(data)
             if result:
-                return 'Successfully added!', 201
+                new_user = users_engine.find_by_username(data['username'])
+                user_id = new_user['_id']
+                return _make_payload(user_id), 201
+            else:
+                return '', 304
         except AttributeError as e:
             return 'User Exists!', 409
 
@@ -38,6 +42,9 @@ def users():
 def username(user_id: int):
     if flask.request.method == 'GET':
         payload = users_engine.find_one(user_id)
+
+        if not payload:
+            return _make_payload({'message': 'User not found'}), 404
         return _make_payload(payload)
     elif flask.request.method == 'DELETE':
         try:
@@ -45,9 +52,11 @@ def username(user_id: int):
             result = users_engine.delete_one(doc)
         except TypeError as e:
             result = False
+        except AttributeError as e:
+            return '', 202
 
         if result:
-            return 'Success!', 200
+            return '', 204
         else:
             return 'User not found!', 404
     elif flask.request.method == 'PATCH':

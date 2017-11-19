@@ -81,10 +81,17 @@ class ApiTest(unittest.TestCase):
             content_type='application/json'
         )
 
+        user_id = json.loads(result.data)
+
         self.assertEqual(
             result.status_code,
             201,
             msg='expected dummy user to POST'
+        )
+
+        self.assertTrue(
+            user_id,
+            msg='expected response to have newly added user id returned'
         )
 
     def test_post_existing_user(self):
@@ -118,7 +125,7 @@ class ApiTest(unittest.TestCase):
 
         self.assertEqual(
             result.status_code,
-            200,
+            204,
             'Expected dummy user to be deleted'
         )
 
