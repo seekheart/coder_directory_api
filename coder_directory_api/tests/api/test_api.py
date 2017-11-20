@@ -58,7 +58,7 @@ class ApiTest(unittest.TestCase):
 
     def test_get_one_user(self):
         result = self.api.get('users/1')
-        payload = json.loads(result.data)
+        payload = json.loads(result.data.decode('utf-8'))
         self.assertEquals(
             result.status_code,
             200,
@@ -81,7 +81,7 @@ class ApiTest(unittest.TestCase):
             content_type='application/json'
         )
 
-        user_id = json.loads(result.data)
+        user_id = json.loads(result.data.decode('utf-8'))
 
         self.assertEqual(
             result.status_code,
