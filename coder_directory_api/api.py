@@ -6,13 +6,15 @@ MIT License, see LICENSE for details.
 """
 
 import flask
+import flask_cors
 import flask_restful
+import flask_restful_swagger_2
 import coder_directory_api.settings as settings
 import coder_directory_api.resources as resources
 
 # Bootstrap api and engines
 app = flask.Flask('__name__')
-api = flask_restful.Api(app)
+api = flask_restful_swagger_2.Api(app, api_version='0.0.1')
 
 api.add_resource(resources.UserList, '/users')
 api.add_resource(resources.User, '/users/<int:user_id>')

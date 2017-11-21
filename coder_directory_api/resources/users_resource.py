@@ -6,14 +6,40 @@ MIT License, see LICENSE for details.
 """
 
 import flask
-from flask_restful import Resource
+# from flask_restful import Resource
+from flask_restful_swagger_2 import swagger, Resource
 from coder_directory_api.engines import UsersEngine
-
+from coder_directory_api.swagger import *
 
 users_engine = UsersEngine()
 
-
 class UserList(Resource):
+    @swagger.doc({
+        'tags': ['users'],
+        'description': 'Returns all users',
+        'parameters': [
+            {
+                'name': 'name',
+                'description': 'Name to filter by',
+                'type': 'string',
+                'in': 'query'
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'List of users',
+                'schema': UserModel,
+                'examples': {
+                    'application/json': [
+                        {
+                            'id': 1,
+                            'name': 'somebody'
+                        }
+                    ]
+                }
+            }
+        }
+    })
     def get(self):
         return flask.make_response(
             _make_payload(users_engine.find_all()),
