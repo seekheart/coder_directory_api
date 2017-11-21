@@ -1,20 +1,21 @@
 """
-Tests for Coder Directory api
+Tests for Coder Directory app
 
 Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 import unittest
-from coder_directory_api import api
+from coder_directory_api import app
 import json
 import coder_directory_api.engines as engines
 
-class ApiTest(unittest.TestCase):
+
+class appTest(unittest.TestCase):
     def setUp(self):
-        """Sets up api prior to performing each test"""
-        api.config['TESTING'] = True
-        api.config['WTF_CRSF_ENABLED'] = False
-        self.api = api.test_client()
+        """Sets up app prior to performing each test"""
+        app.config['TESTING'] = True
+        app.config['WTF_CRSF_ENABLED'] = False
+        self.app = app.test_client()
         self.dummy_user = {
             '_id': 9999,
             'username': 'dummy',
@@ -29,18 +30,18 @@ class ApiTest(unittest.TestCase):
             pass
 
     def tearDown(self):
-        """Clean up protocol for api after each test"""
+        """Clean up protocol for app after each test"""
+        self.app.delete('/users/9999')
         self.app = None
-        self.usr_engine.delete_one(9999)
 
-    def test_home(self):
-        result = self.api.get('/')
-        self.assertEquals(result.status_code,
-                          200,
-                          msg='Expected 200 status code')
+    # def test_home(self):
+    #     result = self.app.get('/')
+    #     self.assertEquals(result.status_code,
+    #                       200,
+    #                       msg='Expected 200 status code')
 
     def test_users_endpoint(self):
-        result = self.api.get('/users')
+        result = self.app.get('/users')
         self.assertEquals(
             result.status_code,
             200,
@@ -50,14 +51,9 @@ class ApiTest(unittest.TestCase):
             result,
             msg='Expected user endpoint to have data'
         )
-        self.assertNotEqual(
-            result,
-            0,
-            msg='Expected payload to not be empty'
-        )
 
     def test_get_one_user(self):
-        result = self.api.get('users/1')
+        result = self.app.get('users/1')
         payload = json.loads(result.data.decode('utf-8'))
         self.assertEquals(
             result.status_code,
@@ -75,7 +71,7 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_post_user(self):
-        result = self.api.post(
+        result = self.app.post(
             '/users',
             data=self.dummy_user,
             content_type='application/json'
@@ -95,12 +91,12 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_post_existing_user(self):
-        self.api.post(
+        self.app.post(
             '/users',
             data=self.dummy_user,
             content_type='application/json'
         )
-        result = self.api.post(
+        result = self.app.post(
             '/users',
             data=self.dummy_user,
             content_type='application/json'
@@ -112,25 +108,38 @@ class ApiTest(unittest.TestCase):
             msg='Expected status code to be 409'
         )
 
+    def test_post_non_existing_user(self):
+        result = self.app.post(
+            '/users',
+            data=None,
+            content_type='application/json'
+        )
+
+        self.assertEquals(
+            result.status_code,
+            400,
+            msg='Expected 400 status code abort'
+        )
+
     def test_delete_user(self):
-        self.api.post(
+        self.app.post(
             '/users',
             data=self.dummy_user,
             content_type='application/json'
         )
 
-        result = self.api.delete(
+        result = self.app.delete(
             '/users/9999'
         )
 
         self.assertEqual(
             result.status_code,
-            204,
+            202,
             'Expected dummy user to be deleted'
         )
 
     def test_delete_no_user(self):
-        result = self.api.delete('/users/44444444')
+        result = self.app.delete('/users/44444444')
 
         self.assertEqual(
             result.status_code,
@@ -139,7 +148,7 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_edit_one_user(self):
-        self.api.post(
+        self.app.post(
             '/users',
             data=self.dummy_user,
             content_type='application/json'
@@ -147,13 +156,13 @@ class ApiTest(unittest.TestCase):
 
         modification = {'username': 'dummy2'}
 
-        self.api.patch(
+        self.app.patch(
             '/users/9999',
             data=modification,
             content_type='application/json'
         )
 
-        data = self.api.get('/users/9999')
+        data = self.app.get('/users/9999')
 
         self.assertEqual(
             data.status_code,
