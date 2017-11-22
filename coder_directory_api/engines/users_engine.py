@@ -52,9 +52,10 @@ class UsersEngine(MongoEngine):
     def add_one(self, user: dict) -> int:
         """Adds a user"""
 
-        if not user['_id']:
+        try:
+            user['_id']
+        except KeyError:
             user['_id'] = self._max_id
-
         user_exists = self.db.find_one({'username': user['username']})
 
         if user_exists:

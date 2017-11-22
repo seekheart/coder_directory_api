@@ -1,89 +1,19 @@
-"""Api
-This is the main entry point.
+"""
+This is the main entry point for Coder Directory Api
 
 Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
 import flask
-import flask_cors
-import flask_restful
-import flask_restful_swagger_2
 import coder_directory_api.settings as settings
-import coder_directory_api.resources as resources
+from coder_directory_api.resources import api
+from werkzeug.contrib.fixers import ProxyFix
+
 
 # Bootstrap api and engines
 app = flask.Flask('__name__')
-api = flask_restful_swagger_2.Api(app, api_version='0.0.1')
-
-api.add_resource(resources.UserList, '/users')
-api.add_resource(resources.User, '/users/<int:user_id>')
-
-
-# @api.route('/')
-# def home():
-#     return 'success!'
-#
-#
-#
-# @api.route('/users', methods=['GET', 'POST'])
-# def users():
-#     if flask.request.method == 'GET':
-#         payload = users_engine.find_all()
-#         return _make_payload(payload)
-#     elif flask.request.method == 'POST':
-#         data = flask.request.get_json()
-#         try:
-#             result = users_engine.add_one(data)
-#             if result:
-#                 new_user = users_engine.find_by_username(data['username'])
-#                 user_id = new_user['_id']
-#                 return _make_payload(user_id), 201
-#             else:
-#                 return '', 304
-#         except AttributeError as e:
-#             return 'User Exists!', 409
-#
-#
-# @api.route('/users/<int:user_id>', methods=['GET', 'PATCH', 'DELETE'])
-# def username(user_id: int):
-#     if flask.request.method == 'GET':
-#         payload = users_engine.find_one(user_id)
-#
-#         if not payload:
-#             return _make_payload({'message': 'User not found'}), 404
-#         return _make_payload(payload)
-#     elif flask.request.method == 'DELETE':
-#         try:
-#             doc = users_engine.find_one(user_id)['_id']
-#             result = users_engine.delete_one(doc)
-#         except TypeError as e:
-#             result = False
-#         except AttributeError as e:
-#             return '', 202
-#
-#         if result:
-#             return '', 204
-#         else:
-#             return 'User not found!', 404
-#     elif flask.request.method == 'PATCH':
-#         try:
-#             doc = users_engine.find_one(user_id)['_id']
-#             data = flask.request.get_json()
-#             result = users_engine.edit_one(doc, data)
-#
-#             if result:
-#                 return '', 204
-#             else:
-#                 return '', 422
-#         except TypeError as e:
-#             return 'User not found!', 404
-#         except AttributeError as e:
-#             return '', 400
-#
-#
-# def _make_payload(p):
-#     return flask.jsonify(p)
+api.init_app(app)
 
 
 if __name__ == '__main__':

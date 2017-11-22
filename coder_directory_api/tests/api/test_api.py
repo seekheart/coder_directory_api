@@ -5,12 +5,12 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 import unittest
-from coder_directory_api import app
+from coder_directory_api import *
 import json
 import coder_directory_api.engines as engines
 
 
-class appTest(unittest.TestCase):
+class AppTest(unittest.TestCase):
     def setUp(self):
         """Sets up app prior to performing each test"""
         app.config['TESTING'] = True
@@ -23,6 +23,7 @@ class appTest(unittest.TestCase):
         }
         self.dummy_user = json.dumps(self.dummy_user)
         self.usr_engine = engines.UsersEngine()
+        self.user_endpoint = '/test/users'
 
         try:
             self.usr_engine.delete_one(9999)
@@ -31,17 +32,11 @@ class appTest(unittest.TestCase):
 
     def tearDown(self):
         """Clean up protocol for app after each test"""
-        self.app.delete('/users/9999')
+        self.usr_engine.delete_one(9999)
         self.app = None
 
-    # def test_home(self):
-    #     result = self.app.get('/')
-    #     self.assertEquals(result.status_code,
-    #                       200,
-    #                       msg='Expected 200 status code')
-
-    def test_users_endpoint(self):
-        result = self.app.get('/users')
+    def test_get_all_users(self):
+        result = self.app.get(self.user_endpoint)
         self.assertEquals(
             result.status_code,
             200,
@@ -53,7 +48,7 @@ class appTest(unittest.TestCase):
         )
 
     def test_get_one_user(self):
-        result = self.app.get('users/1')
+        result = self.app.get('{}/1'.format(self.user_endpoint))
         payload = json.loads(result.data.decode('utf-8'))
         self.assertEquals(
             result.status_code,
@@ -72,7 +67,7 @@ class appTest(unittest.TestCase):
 
     def test_post_user(self):
         result = self.app.post(
-            '/users',
+            self.user_endpoint,
             data=self.dummy_user,
             content_type='application/json'
         )
@@ -92,12 +87,12 @@ class appTest(unittest.TestCase):
 
     def test_post_existing_user(self):
         self.app.post(
-            '/users',
+            self.user_endpoint,
             data=self.dummy_user,
             content_type='application/json'
         )
         result = self.app.post(
-            '/users',
+            self.user_endpoint,
             data=self.dummy_user,
             content_type='application/json'
         )
@@ -110,7 +105,7 @@ class appTest(unittest.TestCase):
 
     def test_post_non_existing_user(self):
         result = self.app.post(
-            '/users',
+            self.user_endpoint,
             data=None,
             content_type='application/json'
         )
@@ -123,13 +118,13 @@ class appTest(unittest.TestCase):
 
     def test_delete_user(self):
         self.app.post(
-            '/users',
+            self.user_endpoint,
             data=self.dummy_user,
             content_type='application/json'
         )
 
         result = self.app.delete(
-            '/users/9999'
+            '{}/9999'.format(self.user_endpoint)
         )
 
         self.assertEqual(
@@ -139,7 +134,7 @@ class appTest(unittest.TestCase):
         )
 
     def test_delete_no_user(self):
-        result = self.app.delete('/users/44444444')
+        result = self.app.delete('{}/44444444'.format(self.user_endpoint))
 
         self.assertEqual(
             result.status_code,
@@ -149,7 +144,7 @@ class appTest(unittest.TestCase):
 
     def test_edit_one_user(self):
         self.app.post(
-            '/users',
+            self.user_endpoint,
             data=self.dummy_user,
             content_type='application/json'
         )
@@ -157,12 +152,12 @@ class appTest(unittest.TestCase):
         modification = {'username': 'dummy2'}
 
         self.app.patch(
-            '/users/9999',
+            '{}/9999'.format(self.user_endpoint),
             data=modification,
             content_type='application/json'
         )
 
-        data = self.app.get('/users/9999')
+        data = self.app.get('{}/9999'.format(self.user_endpoint))
 
         self.assertEqual(
             data.status_code,
