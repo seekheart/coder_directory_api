@@ -103,4 +103,28 @@ class TestLanguagesEngine(unittest.TestCase):
             msg='Expected dummy language to be deleted'
         )
 
+    def test_is_duplicate_language(self):
+        """Tests helper method for checking if a language is a duplicate"""
+        result = self.engine._is_duplicate_language({'name': 'python'})
 
+        self.assertTrue(result, msg='Expected duplicate language to be caught')
+
+    def test_is_not_duplicate_language(self):
+        """Tests helper method for checking if a language is a duplicate"""
+        result = self.engine._is_duplicate_language({'name': 'p'})
+
+        self.assertFalse(
+            result,
+            msg='Expected no duplicate languages to be caught')
+
+    def test_is_synonym(self):
+        """Tests helper method for checking if a language is a synonym"""
+
+        result = self.engine._is_synonym('python')
+        self.assertTrue(result, 'Expected synonym to be found')
+
+    def test_is_not_synonym(self):
+        """Tests helper method for checking if a language is a synonym"""
+
+        result = self.engine._is_synonym('p')
+        self.assertFalse(result, 'Expected synonym to not be found')
