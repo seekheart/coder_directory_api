@@ -9,6 +9,7 @@ MIT License, see LICENSE for details.
 import unittest
 from coder_directory_api.engines import LanguagesEngine
 
+
 class TestLanguagesEngine(unittest.TestCase):
     def setUp(self):
         """Setup testing environment for each test case"""
