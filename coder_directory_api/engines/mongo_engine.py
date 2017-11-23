@@ -26,6 +26,11 @@ class MongoEngine:
             self.db = self.db.get_collection(self._collection)
         except ConnectionError:
             print('Error connecting to database!')
+        self._max_id = self._set_max_id()
+
+    def _set_max_id(self):
+        """private method to set the max id based on the collection's state"""
+        return self.db.find().sort('_id', pymongo.DESCENDING)[0]['_id'] + 1
 
     def find_one(self, lookup: str) -> dict:
         pass

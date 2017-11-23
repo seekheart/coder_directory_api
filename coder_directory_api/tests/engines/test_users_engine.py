@@ -9,9 +9,9 @@ import unittest
 from coder_directory_api import users_engine
 
 
-class UsersEngineTest(unittest.TestCase):
+class TestUsersEngine(unittest.TestCase):
     def setUp(self):
-        """Set up each test case"""
+        """Setup testing environment for each test case"""
         self.engine = users_engine.UsersEngine()
         self.dummy_user = {
             '_id': 99999,
@@ -36,41 +36,67 @@ class UsersEngineTest(unittest.TestCase):
             pass
 
     def test_find_all(self):
+        """Test if engine can return entire user collection"""
         result = self.engine.find_all()
-        self.assertTrue(result, 'expected find all to find all users')
+        self.assertTrue(
+            result,
+            msg='expected find all to find all users')
 
     def test_find_one_user(self):
+        """Test if engine can return one user by _id"""
         result = self.engine.find_one(1)
-        self.assertTrue(result, 'expected to find user 1')
-        self.assertEquals(result['username'], 'test1', 'expected user 1')
+        self.assertTrue(
+            result,
+            msg='expected to find user 1')
+        self.assertEquals(
+            result['username'],
+            'test1',
+            msg='expected username test1')
 
     def test_find_by_username(self):
+        """Test if engine can return one user by username"""
         result = self.engine.find_by_username('test1')
-        self.assertTrue(result, 'expected to find test1 as user')
+        self.assertTrue(
+            result,
+            msg='expected to find test1 as user'
+        )
 
     def test_find_by_username_fail(self):
+        """Test if engine return nothing when username does not exist"""
         result = self.engine.find_by_username('asdf')
-        self.assertFalse(result, 'expected to not find a user')
+        self.assertFalse(
+            result,
+            msg='expected to not find a user'
+        )
 
     def test_add_one_user(self):
+        """Test if engine can add a user to collection and increment _id"""
         result = self.engine.add_one(self.dummy_user)
         self.assertEquals(result, 99999, 'Expected dummy user to be added')
         self.assertEquals(self.engine._max_id, 100000,
                           'Expected max id to raise')
 
     def test_add_existing_user(self):
+        """Test if engine can recognize an already existing user and bounce"""
         self.engine.add_one(self.dummy_user)
-        with self.assertRaises(AttributeError):
-            self.engine.add_one(self.dummy_user)
+        with self.assertRaises(AttributeError, msg='expected error raised'):
+            self.engine.add_one(
+                self.dummy_user)
 
     def test_delete_one_user(self):
+        """Test if engine can delete a user by _id from collection"""
         self.engine.add_one(self.dummy_user)
         result = self.engine.delete_one(self.dummy_user['_id'])
 
-        self.assertTrue(result)
-        self.assertFalse(self.engine.find_one(self.dummy_user['_id']),
-                         'Expected dummy user to not exist')
+        self.assertTrue(result, msg='expected engine to respond with results')
+        self.assertFalse(
+            self.engine.find_one(self.dummy_user['_id']),
+            msg='Expected dummy user to not exist'
+        )
 
     def test_delete_one_user_fail(self):
+        """Test if engine can fail at deleting a non existent user"""
         result = self.engine.delete_one(99999999)
-        self.assertFalse(result, 'expected non-existent user to raise error')
+        self.assertFalse(
+            result,
+            msg='expected non-existent user to raise error')

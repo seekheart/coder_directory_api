@@ -7,3 +7,4 @@ MIT License, see LICENSE for details.
 
 from .mongo_engine import *
 from .users_engine import *
+from .languages_engine import *

@@ -12,11 +12,7 @@ import pymongo
 class UsersEngine(MongoEngine):
     def __init__(self):
         super(UsersEngine, self).__init__('users')
-        self._max_id = self._set_max_id()
 
-    def _set_max_id(self):
-        """private method to set the max id based on the collection's state"""
-        return self.db.find().sort('_id', pymongo.DESCENDING)[0]['_id'] + 1
 
     def find_all(self) -> list:
         """finds all users in the collection.
