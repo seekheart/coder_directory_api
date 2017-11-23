@@ -39,5 +39,5 @@ class MongoEngine:
     def delete_one(self, lookup: str) -> None:
         pass
 
-    def update_one(self, lookup: str, field: dict) -> None:
+    def edit_one(self, lookup: str, field: dict) -> None:
         pass

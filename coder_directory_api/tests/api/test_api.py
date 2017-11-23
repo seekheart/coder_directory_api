@@ -14,7 +14,7 @@ class AppTest(unittest.TestCase):
 
     def setUp(self):
         """Sets up app prior to performing each test"""
-        app = coder_directory_api.app
+        app = coder_directory_api.create_app()
         app.config['TESTING'] = True
         app.config['WTF_CRSF_ENABLED'] = False
         app.config['DEBUG'] = False
@@ -26,7 +26,9 @@ class AppTest(unittest.TestCase):
         }
         self.dummy_user = json.dumps(self.dummy_user)
         self.usr_engine = engines.UsersEngine()
-        self.user_endpoint = '/api/users'
+
+        self.base_url = '/api'
+        self.user_endpoint = '{}/users'.format(self.base_url)
 
         try:
             self.usr_engine.delete_one(9999)
@@ -39,14 +41,16 @@ class AppTest(unittest.TestCase):
         self.app = None
 
     def test_base_url(self):
-        result = self.app.get('/api', follow_redirects=True)
+        """test to make sure home endpoint exists"""
+        result = self.app.get(self.base_url)
         self.assertEquals(
             result.status_code,
             200,
             msg='expected home url to give 200 status')
 
     def test_get_all_users(self):
-        result = self.app.get(self.user_endpoint, follow_redirects=True)
+        """test users endpoint for list of users"""
+        result = self.app.get(self.user_endpoint)
         self.assertEquals(
             result.status_code,
             200,
@@ -58,6 +62,7 @@ class AppTest(unittest.TestCase):
         )
 
     def test_get_one_user(self):
+        """test getting one specific user from users resource"""
         result = self.app.get('{}/1'.format(self.user_endpoint))
         payload = json.loads(result.data.decode('utf-8'))
         self.assertEquals(
@@ -76,13 +81,13 @@ class AppTest(unittest.TestCase):
         )
 
     def test_post_user(self):
+        """test adding a user to users resource"""
         result = self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
         )
 
         user_id = json.loads(result.data.decode('utf-8'))
-
 
         self.assertEqual(
             result.status_code,
@@ -96,15 +101,14 @@ class AppTest(unittest.TestCase):
         )
 
     def test_post_existing_user(self):
+        """test if api can prevent adding duplicate user to users resource"""
         self.app.post(
             self.user_endpoint,
-            data=self.dummy_user,
-            content_type='application/json'
+            data=self.dummy_user
         )
         result = self.app.post(
             self.user_endpoint,
-            data=self.dummy_user,
-            content_type='application/json'
+            data=self.dummy_user
         )
 
         self.assertEqual(
@@ -114,10 +118,10 @@ class AppTest(unittest.TestCase):
         )
 
     def test_post_non_existing_user(self):
+        """test if api can handle no payload post to users resource"""
         result = self.app.post(
             self.user_endpoint,
             data=None,
-            content_type='application/json'
         )
 
         self.assertEquals(
@@ -127,11 +131,10 @@ class AppTest(unittest.TestCase):
         )
 
     def test_delete_user(self):
+        """test if a user can be deleted"""
         self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
-            content_type='application/json',
-            follow_redirects=True
         )
 
         result = self.app.delete(
@@ -145,6 +148,7 @@ class AppTest(unittest.TestCase):
         )
 
     def test_delete_no_user(self):
+        """test if a invalid user is deletable from users resource"""
         result = self.app.delete('{}/44444444'.format(self.user_endpoint))
 
         self.assertEqual(
@@ -154,19 +158,20 @@ class AppTest(unittest.TestCase):
         )
 
     def test_edit_one_user(self):
+        """test if a user of users resource can be edited"""
         self.app.post(
             self.user_endpoint,
-            data=self.dummy_user,
-            content_type='application/json'
+            data=self.dummy_user
         )
 
-        modification = {'username': 'dummy2'}
+        modification = json.dumps({'username': 'dummy2'})
 
-        self.app.patch(
+        result = self.app.patch(
             '{}/9999'.format(self.user_endpoint),
-            data=modification,
-            content_type='application/json'
+            data=modification
         )
+
+        self.assertEquals(result.status_code, 204)
 
         data = self.app.get('{}/9999'.format(self.user_endpoint))
 

@@ -10,6 +10,7 @@ from flask import abort, request
 from coder_directory_api.engines import UsersEngine
 import json
 
+# setup the users resource
 api = Namespace('users', description='Users resource')
 
 # model registry
@@ -50,6 +51,7 @@ users_engine = UsersEngine()
 
 @api.route('/')
 class UserList(Resource):
+    """This defines the users collection for GET and POST requests"""
     @api.marshal_list_with(user_model, mask=None)
     @api.doc(responses={
         200: 'Success',
@@ -57,6 +59,7 @@ class UserList(Resource):
         500: 'Internal server error!',
     })
     def get(self):
+        """Finds all users in the users resource"""
         return users_engine.find_all()
 
     @api.expect(user_model)
@@ -67,6 +70,10 @@ class UserList(Resource):
         409: 'User exists',
     })
     def post(self):
+        """Adds a user to the users collection
+        if there is data in the request provided by caller.
+        User_id is automatically added if not provided.
+        """
         try:
             data = json.loads(request.data.decode('utf-8'))
         except ValueError as e:
@@ -89,6 +96,7 @@ class UserList(Resource):
 
 @api.route('/<int:user_id>')
 class User(Resource):
+    """This provides GET, PATCH, and DELETE to a user in users collection"""
     @api.marshal_with(user_model, mask=None)
     @api.doc(responses={
         200: 'Success',
@@ -96,6 +104,13 @@ class User(Resource):
         500: 'Internal server error',
     })
     def get(self, user_id: int):
+        """Gets one user based on the user_id provided
+
+        Args:
+            user_id: unique user identifier number.
+        Returns:
+            a message json with http status code.
+        """
         payload = users_engine.find_one(user_id)
         if not payload:
             return {'message': 'User not found'}, 404
@@ -107,7 +122,15 @@ class User(Resource):
         404: 'User not found',
         500: 'Internal server error',
     })
-    def delete(self, user_id: int):
+    def delete(self, user_id: int) -> tuple:
+        """Deletes a user from the user resource by user_id.
+
+        Args:
+            user_id: unique user identifier number.
+
+        Returns:
+            a message json with http status code.
+        """
         try:
             doc = users_engine.find_one(user_id)['_id']
             result = users_engine.delete_one(doc)
@@ -121,3 +144,37 @@ class User(Resource):
             return {'message': 'Accepted'}, 202
         else:
             return {'message': 'User not found'}, 404
+
+    @api.expect(user_model)
+    @api.marshal_list_with(message_model, mask=None)
+    @api.doc(responses={
+        204: 'No Content',
+        400: 'Bad Request',
+        404: 'User not found',
+        422: 'Unprocessable Entity',
+        500: 'Internal server error'
+    })
+    def patch(self, user_id: int) -> tuple:
+        """Edits a user from users resource by user_id.
+
+        Args:
+            user_id: unique user identifier number.
+
+        Returns:
+            a message json with http status code
+        """
+
+        try:
+            data = json.loads(request.data.decode('utf-8'))
+            user = users_engine.find_one(user_id)
+            if not user:
+                return {'message': 'User not found'}, 404
+            result = users_engine.edit_one(user_id, data)
+        except AttributeError as e:
+            return {'message': 'Bad request'}, 400
+
+        if result:
+            return {'message': 'No Content'}, 204
+        else:
+            return {'message': 'Unprocessable Entity'}, 422
+
