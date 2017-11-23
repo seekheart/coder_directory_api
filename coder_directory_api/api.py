@@ -7,13 +7,14 @@ MIT License, see LICENSE for details.
 
 import flask
 import coder_directory_api.settings as settings
-from coder_directory_api.resources import api
+from coder_directory_api.resources import blueprint
 from werkzeug.contrib.fixers import ProxyFix
 
 
-# Bootstrap api and engines
 app = flask.Flask('__name__')
-api.init_app(app)
+app.wsgi_app = ProxyFix(app.wsgi_app)
+app.register_blueprint(blueprint)
+
 
 
 if __name__ == '__main__':

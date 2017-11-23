@@ -5,16 +5,19 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 import unittest
-from coder_directory_api import *
 import json
 import coder_directory_api.engines as engines
+import coder_directory_api
 
 
 class AppTest(unittest.TestCase):
+
     def setUp(self):
         """Sets up app prior to performing each test"""
+        app = coder_directory_api.app
         app.config['TESTING'] = True
         app.config['WTF_CRSF_ENABLED'] = False
+        app.config['DEBUG'] = False
         self.app = app.test_client()
         self.dummy_user = {
             '_id': 9999,
@@ -23,7 +26,7 @@ class AppTest(unittest.TestCase):
         }
         self.dummy_user = json.dumps(self.dummy_user)
         self.usr_engine = engines.UsersEngine()
-        self.user_endpoint = '/test/users'
+        self.user_endpoint = '/api/users'
 
         try:
             self.usr_engine.delete_one(9999)
@@ -35,8 +38,15 @@ class AppTest(unittest.TestCase):
         self.usr_engine.delete_one(9999)
         self.app = None
 
+    def test_base_url(self):
+        result = self.app.get('/api', follow_redirects=True)
+        self.assertEquals(
+            result.status_code,
+            200,
+            msg='expected home url to give 200 status')
+
     def test_get_all_users(self):
-        result = self.app.get(self.user_endpoint)
+        result = self.app.get(self.user_endpoint, follow_redirects=True)
         self.assertEquals(
             result.status_code,
             200,
@@ -120,7 +130,8 @@ class AppTest(unittest.TestCase):
         self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
-            content_type='application/json'
+            content_type='application/json',
+            follow_redirects=True
         )
 
         result = self.app.delete(

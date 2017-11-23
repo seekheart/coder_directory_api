@@ -48,7 +48,7 @@ message_model = api.model('Message', {
 users_engine = UsersEngine()
 
 
-@api.route('/users')
+@api.route('/')
 class UserList(Resource):
     @api.marshal_list_with(user_model, mask=None)
     @api.doc(responses={
@@ -85,7 +85,7 @@ class UserList(Resource):
             return {'message': 'User exists!'}, 409
 
 
-@api.route('/users/<int:user_id>')
+@api.route('/<int:user_id>')
 class User(Resource):
     @api.marshal_with(user_model, mask=None)
     @api.doc(responses={
