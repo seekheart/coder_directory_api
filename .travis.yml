@@ -1,3 +1,4 @@
+# These are the versions of our backend to be supported
 language: python
 python:
   - "3.3"
@@ -5,27 +6,30 @@ python:
   - "3.5"
   - "3.6"
 
-
+# install dependencies, for python3.4 setuptools needs to be upgraded first
 install:
   - "pip install -U setuptools"
   - "pip install -r requirements.txt"
 
-
-
+# we use mongodb as our database
 services:
   - mongodb
 
+# Seed the mongodb with some test data
 before_script:
   - bash mock_data/db_init.sh
 
+# Run the test suite
 script:
   - nosetests
 
+# notify if there is a change in build status
 notification:
   email:
     on_success: change
     on_failure: change
 
+# monitor only these branches
 branches:
   only:
     - master
