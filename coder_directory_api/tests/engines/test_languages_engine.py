@@ -103,6 +103,51 @@ class TestLanguagesEngine(unittest.TestCase):
             msg='Expected dummy language to be deleted'
         )
 
+    def test_edit_one(self):
+        """Test if engine can edit a language doc"""
+        self.engine.add_one(self.dummy_language)
+        result = self.engine.edit_one(9999, {'name': 'test2'})
+
+        self.assertTrue(
+            result,
+            msg='Expected language engine to return results'
+        )
+
+        updated_doc = self.engine.find_by_name('test2')
+        self.assertTrue(
+            updated_doc,
+            msg='Expected updated doc'
+        )
+        self.assertEquals(
+            updated_doc['name'],
+            'test2',
+            msg='expected language name to have been updated'
+        )
+
+    def test_add_synonym(self):
+        """Tests method to add synonym to a language"""
+
+        self.engine.add_one(self.dummy_language)
+        result = self.engine.add_synonym(
+            self.dummy_language['_id'],
+            'bob'
+        )
+
+        self.assertTrue(result, msg='Expected synonym to be added')
+
+        doc = self.engine.find_one(9999)
+        self.assertEquals(
+            len(doc['synonyms']),
+            3,
+            msg='expected synonym to be added to document'
+        )
+
+        self.assertIn(
+            'bob',
+            doc['synonyms'],
+            msg='Expected bob to be in synonyms'
+        )
+
     def test_is_duplicate_language(self):
         """Tests helper method for checking if a language is a duplicate"""
         result = self.engine._is_duplicate_language({'name': 'python'})

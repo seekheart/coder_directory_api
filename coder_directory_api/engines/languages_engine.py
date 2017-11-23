@@ -79,7 +79,7 @@ class LanguagesEngine(MongoEngine):
         return lang['_id']
 
     def delete_one(self, lang_id: int) -> bool:
-        """method to delete a language from the collection by _id
+        """method to delete a language from the collection by _id.
 
         Args:
             lang_id: unique identifier for language
@@ -98,14 +98,56 @@ class LanguagesEngine(MongoEngine):
 
         return result
 
-    def _is_duplicate_language(self, lang: dict) -> bool:
-        """Helper method to check if language is a duplicate or not
+    def edit_one(self, lang_id: int, lang_doc: dict) -> bool:
+        """method to edit a language's document given a document with diff and
+        _id of document to edit.
 
         Args:
-            lang: language document to validate
+            lang_id: unique id of language to be updated.
+            lang_doc: document containing edits.
 
         Returns:
-            indicator of whether or not language is a duplicate
+            Result of edit being success or failure.
+        """
+
+        lookup = {'_id': lang_id}
+        try:
+            self.db.update_one(lookup, {'$set': lang_doc})
+            result = True
+        except AttributeError as e:
+            result = False
+        return result
+
+    def add_synonym(self, lang_id: int, syn: str) -> bool:
+        """Method to add a synonym to a language's document
+
+        Args:
+            lang_id: unique id of language to be edited
+            syn: synonym term to add
+
+        Returns:
+            status of adding synonym
+        """
+
+        lookup = {'_id': lang_id}
+        is_exists = self._is_synonym(syn)
+
+        if not is_exists:
+            self.db.update_one(lookup, {'$push': {'synonyms': syn}})
+            result = True
+        else:
+            result = False
+
+        return result
+
+    def _is_duplicate_language(self, lang: dict) -> bool:
+        """Helper method to check if language is a duplicate or not.
+
+        Args:
+            lang: language document to validate.
+
+        Returns:
+            indicator of whether or not language is a duplicate.
         """
 
         is_synonym = self._is_synonym(lang['name'])
@@ -117,6 +159,14 @@ class LanguagesEngine(MongoEngine):
         return False
 
     def _is_synonym(self, lang_name: str) -> bool:
+        """Helper method to check for synonyms.
+
+        Args:
+            lang_name: name of language to check
+
+        Returns:
+            status of synonym
+        """
         docs = self.find_all()
         for doc in docs:
             if lang_name in doc['synonyms']:

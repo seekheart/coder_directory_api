@@ -62,7 +62,7 @@ class UsersEngine(MongoEngine):
         return True
 
     def add_one(self, user: dict) -> int:
-        """Adds a user document to the collection
+        """Adds a user document to the collection.
 
         Args:
             user: user's document to be added to collection.
@@ -94,10 +94,10 @@ class UsersEngine(MongoEngine):
 
         Args:
             user_id: user's unique _id from collection.
-            user_dict: user's new data in dict format
+            user_dict: user's new data in dict format.
 
         Returns:
-            Result of edit being Success or Failure.
+            Result of edit being success or failure.
         """
 
         lookup = {'_id': user_id}
