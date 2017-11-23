@@ -67,9 +67,11 @@ class UserList(Resource):
         409: 'User exists',
     })
     def post(self):
-        data = json.loads(request.data.decode('utf-8'))
-        if not data:
+        try:
+            data = json.loads(request.data.decode('utf-8'))
+        except ValueError as e:
             abort(400)
+
         try:
             result = users_engine.add_one(data)
             if result:

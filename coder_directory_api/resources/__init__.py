@@ -7,7 +7,6 @@ MIT License, see LICENSE for details.
 
 from flask_restplus import Api
 from flask import Blueprint
-from coder_directory_api import BASE_URL
 from .users import api as users_api
 
 

@@ -79,10 +79,10 @@ class AppTest(unittest.TestCase):
         result = self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
-            content_type='application/json'
         )
 
         user_id = json.loads(result.data.decode('utf-8'))
+
 
         self.assertEqual(
             result.status_code,

@@ -8,11 +8,10 @@ MIT License, see LICENSE for details.
 import flask
 import coder_directory_api.settings as settings
 from coder_directory_api.resources import blueprint
-from werkzeug.contrib.fixers import ProxyFix
 
 
 app = flask.Flask('__name__')
-app.wsgi_app = ProxyFix(app.wsgi_app)
+app.url_map.strict_slashes = False
 app.register_blueprint(blueprint)
 
 
