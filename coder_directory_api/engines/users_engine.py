@@ -19,20 +19,29 @@ class UsersEngine(MongoEngine):
         return self.db.find().sort('_id', pymongo.DESCENDING)[0]['_id'] + 1
 
     def find_all(self) -> list:
-        """find all method for users"""
+        """finds all users in the collection.
 
-        return [doc for doc in self.db.find()]
+        Returns:
+            users collection sorted by _id in ascending order.
+        """
+
+        return [doc for doc in self.db.find().sort('_id', pymongo.ASCENDING)]
 
     def find_one(self, user_id: int) -> dict:
-        """find one user by _id"""
+        """finds one user in collection by _id.
+
+        Returns:
+            user document that matches _id
+        """
 
         return self.db.find_one({'_id': user_id})
 
     def find_by_username(self, username: str) -> dict:
-        """find one user by username
+        """finds one user document by username
 
         Args:
             username: username to query for
+
         Returns:
             a user's document if it exists
         """
@@ -40,7 +49,14 @@ class UsersEngine(MongoEngine):
         return self.db.find_one({'username': username})
 
     def delete_one(self, user_id: int) -> bool:
-        """Deletes a user by _id"""
+        """Deletes a user document by _id
+
+        Args:
+            user_id: unique user _id number.
+
+        Returns:
+            result of delete being success or failure.
+        """
 
         del_count = self.db.delete_one({'_id': user_id})
 
@@ -50,7 +66,14 @@ class UsersEngine(MongoEngine):
         return True
 
     def add_one(self, user: dict) -> int:
-        """Adds a user"""
+        """Adds a user document to the collection
+
+        Args:
+            user: user's document to be added to collection.
+
+        Returns:
+            user's _id if user document was successfully added.
+        """
 
         try:
             user['_id']
@@ -71,7 +94,15 @@ class UsersEngine(MongoEngine):
         return user['_id']
 
     def edit_one(self, user_id: int, user_dict: dict) -> bool:
-        """Edits a user"""
+        """Edits a user's document
+
+        Args:
+            user_id: user's unique _id from collection.
+            user_dict: user's new data in dict format
+
+        Returns:
+            Result of edit being Success or Failure.
+        """
 
         lookup = {'_id': user_id}
 
