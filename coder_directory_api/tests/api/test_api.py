@@ -1,20 +1,24 @@
 """
-Tests for Coder Directory api
+Tests for Coder Directory app
 
 Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 import unittest
-from coder_directory_api import api
 import json
 import coder_directory_api.engines as engines
+import coder_directory_api
 
-class ApiTest(unittest.TestCase):
+
+class AppTest(unittest.TestCase):
+
     def setUp(self):
-        """Sets up api prior to performing each test"""
-        api.config['TESTING'] = True
-        api.config['WTF_CRSF_ENABLED'] = False
-        self.api = api.test_client()
+        """Sets up app prior to performing each test"""
+        app = coder_directory_api.create_app()
+        app.config['TESTING'] = True
+        app.config['WTF_CRSF_ENABLED'] = False
+        app.config['DEBUG'] = False
+        self.app = app.test_client()
         self.dummy_user = {
             '_id': 9999,
             'username': 'dummy',
@@ -23,24 +27,30 @@ class ApiTest(unittest.TestCase):
         self.dummy_user = json.dumps(self.dummy_user)
         self.usr_engine = engines.UsersEngine()
 
+        self.base_url = '/api'
+        self.user_endpoint = '{}/users'.format(self.base_url)
+
         try:
             self.usr_engine.delete_one(9999)
         except AttributeError as e:
             pass
 
     def tearDown(self):
-        """Clean up protocol for api after each test"""
-        self.app = None
+        """Clean up protocol for app after each test"""
         self.usr_engine.delete_one(9999)
+        self.app = None
 
-    def test_home(self):
-        result = self.api.get('/')
-        self.assertEquals(result.status_code,
-                          200,
-                          msg='Expected 200 status code')
+    def test_base_url(self):
+        """test to make sure home endpoint exists"""
+        result = self.app.get(self.base_url)
+        self.assertEquals(
+            result.status_code,
+            200,
+            msg='expected home url to give 200 status')
 
-    def test_users_endpoint(self):
-        result = self.api.get('/users')
+    def test_get_all_users(self):
+        """test users endpoint for list of users"""
+        result = self.app.get(self.user_endpoint)
         self.assertEquals(
             result.status_code,
             200,
@@ -50,14 +60,10 @@ class ApiTest(unittest.TestCase):
             result,
             msg='Expected user endpoint to have data'
         )
-        self.assertNotEqual(
-            result,
-            0,
-            msg='Expected payload to not be empty'
-        )
 
     def test_get_one_user(self):
-        result = self.api.get('users/1')
+        """test getting one specific user from users resource"""
+        result = self.app.get('{}/1'.format(self.user_endpoint))
         payload = json.loads(result.data.decode('utf-8'))
         self.assertEquals(
             result.status_code,
@@ -75,10 +81,10 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_post_user(self):
-        result = self.api.post(
-            '/users',
+        """test adding a user to users resource"""
+        result = self.app.post(
+            self.user_endpoint,
             data=self.dummy_user,
-            content_type='application/json'
         )
 
         user_id = json.loads(result.data.decode('utf-8'))
@@ -95,15 +101,14 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_post_existing_user(self):
-        self.api.post(
-            '/users',
-            data=self.dummy_user,
-            content_type='application/json'
+        """test if api can prevent adding duplicate user to users resource"""
+        self.app.post(
+            self.user_endpoint,
+            data=self.dummy_user
         )
-        result = self.api.post(
-            '/users',
-            data=self.dummy_user,
-            content_type='application/json'
+        result = self.app.post(
+            self.user_endpoint,
+            data=self.dummy_user
         )
 
         self.assertEqual(
@@ -112,25 +117,39 @@ class ApiTest(unittest.TestCase):
             msg='Expected status code to be 409'
         )
 
-    def test_delete_user(self):
-        self.api.post(
-            '/users',
-            data=self.dummy_user,
-            content_type='application/json'
+    def test_post_non_existing_user(self):
+        """test if api can handle no payload post to users resource"""
+        result = self.app.post(
+            self.user_endpoint,
+            data=None,
         )
 
-        result = self.api.delete(
-            '/users/9999'
+        self.assertEquals(
+            result.status_code,
+            400,
+            msg='Expected 400 status code abort'
+        )
+
+    def test_delete_user(self):
+        """test if a user can be deleted"""
+        self.app.post(
+            self.user_endpoint,
+            data=self.dummy_user,
+        )
+
+        result = self.app.delete(
+            '{}/9999'.format(self.user_endpoint)
         )
 
         self.assertEqual(
             result.status_code,
-            204,
+            202,
             'Expected dummy user to be deleted'
         )
 
     def test_delete_no_user(self):
-        result = self.api.delete('/users/44444444')
+        """test if a invalid user is deletable from users resource"""
+        result = self.app.delete('{}/44444444'.format(self.user_endpoint))
 
         self.assertEqual(
             result.status_code,
@@ -139,21 +158,22 @@ class ApiTest(unittest.TestCase):
         )
 
     def test_edit_one_user(self):
-        self.api.post(
-            '/users',
-            data=self.dummy_user,
-            content_type='application/json'
+        """test if a user of users resource can be edited"""
+        self.app.post(
+            self.user_endpoint,
+            data=self.dummy_user
         )
 
-        modification = {'username': 'dummy2'}
+        modification = json.dumps({'username': 'dummy2'})
 
-        self.api.patch(
-            '/users/9999',
-            data=modification,
-            content_type='application/json'
+        result = self.app.patch(
+            '{}/9999'.format(self.user_endpoint),
+            data=modification
         )
 
-        data = self.api.get('/users/9999')
+        self.assertEquals(result.status_code, 204)
+
+        data = self.app.get('{}/9999'.format(self.user_endpoint))
 
         self.assertEqual(
             data.status_code,
