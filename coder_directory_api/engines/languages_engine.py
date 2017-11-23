@@ -140,6 +140,28 @@ class LanguagesEngine(MongoEngine):
 
         return result
 
+    def delete_synonym(self, lang_id: int, syn: str) -> bool:
+        """Method to delete a synonym to a language's document
+
+        Args:
+            lang_id: unique id of language to be edited
+            syn: synonym term to add
+
+        Returns:
+            status of deleting synonym
+        """
+
+        lookup = {'_id': lang_id}
+        is_exists = self._is_synonym(syn)
+
+        if is_exists:
+            self.db.update_one(lookup, {'$pull': {'synonyms': syn}})
+            result = True
+        else:
+            result = False
+
+        return result
+
     def _is_duplicate_language(self, lang: dict) -> bool:
         """Helper method to check if language is a duplicate or not.
 

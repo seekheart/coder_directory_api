@@ -126,7 +126,6 @@ class TestLanguagesEngine(unittest.TestCase):
 
     def test_add_synonym(self):
         """Tests method to add synonym to a language"""
-
         self.engine.add_one(self.dummy_language)
         result = self.engine.add_synonym(
             self.dummy_language['_id'],
@@ -146,6 +145,19 @@ class TestLanguagesEngine(unittest.TestCase):
             'bob',
             doc['synonyms'],
             msg='Expected bob to be in synonyms'
+        )
+
+    def test_delete_synonym(self):
+        """Tests method to delete a synonym from a language"""
+        self.engine.add_one(self.dummy_language)
+
+        result = self.engine.delete_synonym(9999, 'test1')
+
+        self.assertTrue(result, msg='Expected synonym to be deleted')
+        self.assertNotIn(
+            'test1',
+            self.engine.find_one(9999)['synonyms'],
+            msg='expected test1 to have been deleted from synonyms'
         )
 
     def test_is_duplicate_language(self):
