@@ -7,8 +7,9 @@ python:
 
 
 install:
-  - "pip install -U setuptools"
   - "pip install -r requirements.txt"
+  - "pip install -U setuptools"
+
 
 services:
   - mongodb
