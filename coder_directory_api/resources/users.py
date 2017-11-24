@@ -56,9 +56,9 @@ class UserList(Resource):
     @api.doc(responses={
         200: 'Success',
         400: 'Bad Request',
-        500: 'Internal server error!',
+        500: 'Internal Server error!',
     })
-    def get(self):
+    def get(self) -> list:
         """Finds all users in the users resource"""
         return users_engine.find_all()
 
@@ -69,7 +69,7 @@ class UserList(Resource):
         304: 'Not modified',
         409: 'User exists',
     })
-    def post(self):
+    def post(self) -> tuple or dict:
         """Adds a user to the users collection
         if there is data in the request provided by caller.
         User_id is automatically added if not provided.
@@ -100,10 +100,11 @@ class User(Resource):
     @api.marshal_with(user_model, mask=None)
     @api.doc(responses={
         200: 'Success',
-        404: 'User not found',
+        400: 'Bad Request',
+        404: 'User Not found',
         500: 'Internal server error',
     })
-    def get(self, user_id: int):
+    def get(self, user_id: int) -> tuple or dict:
         """Gets one user based on the user_id provided
 
         Args:
@@ -113,13 +114,13 @@ class User(Resource):
         """
         payload = users_engine.find_one(user_id)
         if not payload:
-            return {'message': 'User not found'}, 404
+            return {'message': 'User Not Found'}, 404
         return payload
 
-    @api.marshal_list_with(message_model, mask=None)
+    @api.marshal_with(message_model, mask=None)
     @api.doc(responses={
         202: 'Accepted',
-        404: 'User not found',
+        404: 'User Not Found',
         500: 'Internal server error',
     })
     def delete(self, user_id: int) -> tuple:
@@ -132,8 +133,8 @@ class User(Resource):
             a message json with http status code.
         """
         try:
-            doc = users_engine.find_one(user_id)['_id']
-            result = users_engine.delete_one(doc)
+            # doc = users_engine.find_one(user_id)['_id']
+            result = users_engine.delete_one(user_id)
         except TypeError as e:
             print('TypeError', e)
             result = False
@@ -143,7 +144,7 @@ class User(Resource):
         if result:
             return {'message': 'Accepted'}, 202
         else:
-            return {'message': 'User not found'}, 404
+            return {'message': 'User Not Found'}, 404
 
     @api.expect(user_model)
     @api.marshal_list_with(message_model, mask=None)
@@ -171,7 +172,7 @@ class User(Resource):
                 return {'message': 'User not found'}, 404
             result = users_engine.edit_one(user_id, data)
         except AttributeError as e:
-            return {'message': 'Bad request'}, 400
+            return {'message': 'Bad Request'}, 400
 
         if result:
             return {'message': 'No Content'}, 204
