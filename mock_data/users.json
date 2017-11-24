@@ -2,7 +2,7 @@
   {
     "_id": 1,
     "username": "test1",
-    "languages": [1,2],
+    "languages": ["python", "perl"],
     "profile": {
       "bio": "A programmer test user",
       "learning": ["python", "angular"]
@@ -11,10 +11,19 @@
     {
     "_id": 2,
     "username": "test2",
-    "languages": [1, 3],
+    "languages": ["python", "java"],
     "profile": {
       "bio": "A programmer test user2",
       "learning": ["python", "java"]
+    }
+  },
+  {
+    "_id": 3,
+    "username": "test3",
+    "languages": ["javascript", "C"],
+    "profile": {
+      "bio": "A die hard coder",
+      "learning": ["Fortran"]
     }
   }
 ]

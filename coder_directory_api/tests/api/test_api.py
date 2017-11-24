@@ -8,6 +8,7 @@ import unittest
 import json
 import coder_directory_api.engines as engines
 import coder_directory_api
+from coder_directory_api.settings import BASE_URL
 
 
 class AppTest(unittest.TestCase):
@@ -19,25 +20,44 @@ class AppTest(unittest.TestCase):
         app.config['WTF_CRSF_ENABLED'] = False
         app.config['DEBUG'] = False
         self.app = app.test_client()
+
+
+        # engines for clean up
+        self.usr_engine = engines.UsersEngine()
+        self.language_engine = engines.LanguagesEngine()
+
+        # urls
+        self.base_url = BASE_URL
+        self.user_endpoint = '{}/users'.format(self.base_url)
+        self.language_endpoint = '{}/languages'.format(self.base_url)
+
+        # dummy data
         self.dummy_user = {
             '_id': 9999,
             'username': 'dummy',
             'languages': [1]
         }
         self.dummy_user = json.dumps(self.dummy_user)
-        self.usr_engine = engines.UsersEngine()
-
-        self.base_url = '/api'
-        self.user_endpoint = '{}/users'.format(self.base_url)
+        self.dummy_language = {
+            "_id": 9999,
+            "name": "test3",
+            "synonyms": ["asdf", "fefe"],
+            "users": [9999]
+        }
+        self.dummy_language = json.dumps(self.dummy_language)
 
         try:
             self.usr_engine.delete_one(9999)
+            self.language_engine.delete_one(9999)
         except AttributeError as e:
             pass
 
     def tearDown(self):
         """Clean up protocol for app after each test"""
         self.usr_engine.delete_one(9999)
+        self.language_engine.delete_one(9999)
+        self.usr_engine = None
+        self.language_engine = None
         self.app = None
 
     def test_base_url(self):
@@ -179,4 +199,101 @@ class AppTest(unittest.TestCase):
             data.status_code,
             200,
             'expected dummy2 to exist after patch'
+        )
+
+    def test_get_all_languages(self):
+        """Test if all langauges in language resource can be gotten"""
+        result = self.app.get(self.language_endpoint)
+
+        self.assertEquals(
+            result.status_code,
+            200,
+            msg='Expected 200 status on languages resource'
+        )
+
+    def test_get_one_language(self):
+        """Test if a single language can be gotten from language resource"""
+        result = self.app.get('{}/1'.format(self.language_endpoint))
+
+        self.assertEquals(
+            result.status_code,
+            200,
+            msg='Expected 200 status on finding language 1'
+        )
+
+    def test_add_one_language(self):
+        """Test if a single language can be added to language resource"""
+        result = self.app.post(
+            self.language_endpoint,
+            data=self.dummy_language
+        )
+
+        self.assertEquals(
+            result.status_code,
+            201,
+            msg='Expected creation of dummy language'
+        )
+
+    def test_add_duplicate_language(self):
+        """Test if adding the same language twice produces an error"""
+        self.app.post(
+            self.language_endpoint,
+            data=self.dummy_language
+        )
+
+        result = self.app.post(
+            self.language_endpoint,
+            data=self.dummy_language
+        )
+
+        self.assertEquals(
+            result.status_code,
+            409,
+            msg='Expected 409 status code from adding duplicate language'
+        )
+
+    def test_delete_one_language(self):
+        """Test if a language can be deleted from a language resource"""
+        self.app.post(
+            self.language_endpoint,
+            data=self.dummy_language
+        )
+
+        result = self.app.delete(
+            '{}/9999'.format(self.language_endpoint)
+        )
+        self.assertEquals(
+            result.status_code,
+            202,
+            msg='Expected dummy language to be deleted'
+        )
+
+    def test_delete_no_language(self):
+        """test if a invalid language is deletable from languages resource"""
+        result = self.app.delete('{}/44444444'.format(self.language_endpoint))
+
+        self.assertEqual(
+            result.status_code,
+            404,
+            msg='Expected to not find language to delete'
+        )
+
+    def test_edit_one_language(self):
+        """Test if a language can be PATCHed"""
+        self.app.post(
+            self.language_endpoint,
+            data=self.dummy_language
+        )
+
+        new_doc = json.dumps({'name': 'foobar'})
+
+        result = self.app.patch(
+            '{}/9999'.format(self.language_endpoint),
+            data=new_doc
+        )
+
+        self.assertEquals(
+            result.status_code,
+            204,
+            'Expected language to be edited'
         )
