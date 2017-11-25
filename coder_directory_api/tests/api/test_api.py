@@ -105,6 +105,7 @@ class AppTest(unittest.TestCase):
         result = self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
+            content_type='application/json'
         )
 
         user_id = json.loads(result.data.decode('utf-8'))
@@ -124,11 +125,13 @@ class AppTest(unittest.TestCase):
         """test if api can prevent adding duplicate user to users resource"""
         self.app.post(
             self.user_endpoint,
-            data=self.dummy_user
+            data=self.dummy_user,
+            content_type='application/json'
         )
         result = self.app.post(
             self.user_endpoint,
-            data=self.dummy_user
+            data=self.dummy_user,
+            content_type='application/json'
         )
 
         self.assertEqual(
@@ -142,6 +145,7 @@ class AppTest(unittest.TestCase):
         result = self.app.post(
             self.user_endpoint,
             data=None,
+            content_type='application/json'
         )
 
         self.assertEquals(
@@ -155,6 +159,7 @@ class AppTest(unittest.TestCase):
         self.app.post(
             self.user_endpoint,
             data=self.dummy_user,
+            content_type='application/json'
         )
 
         result = self.app.delete(
@@ -181,14 +186,16 @@ class AppTest(unittest.TestCase):
         """test if a user of users resource can be edited"""
         self.app.post(
             self.user_endpoint,
-            data=self.dummy_user
+            data=self.dummy_user,
+            content_type='application/json'
         )
 
         modification = json.dumps({'username': 'dummy2'})
 
         result = self.app.patch(
             '{}/9999'.format(self.user_endpoint),
-            data=modification
+            data=modification,
+            content_type='application/json'
         )
 
         self.assertEquals(result.status_code, 204)
@@ -225,7 +232,8 @@ class AppTest(unittest.TestCase):
         """Test if a single language can be added to language resource"""
         result = self.app.post(
             self.language_endpoint,
-            data=self.dummy_language
+            data=self.dummy_language,
+            content_type='application/json'
         )
 
         self.assertEquals(
@@ -238,12 +246,14 @@ class AppTest(unittest.TestCase):
         """Test if adding the same language twice produces an error"""
         self.app.post(
             self.language_endpoint,
-            data=self.dummy_language
+            data=self.dummy_language,
+            content_type='application/json'
         )
 
         result = self.app.post(
             self.language_endpoint,
-            data=self.dummy_language
+            data=self.dummy_language,
+            content_type='application/json'
         )
 
         self.assertEquals(
@@ -256,7 +266,8 @@ class AppTest(unittest.TestCase):
         """Test if a language can be deleted from a language resource"""
         self.app.post(
             self.language_endpoint,
-            data=self.dummy_language
+            data=self.dummy_language,
+            content_type='application/json'
         )
 
         result = self.app.delete(
@@ -282,14 +293,16 @@ class AppTest(unittest.TestCase):
         """Test if a language can be PATCHed"""
         self.app.post(
             self.language_endpoint,
-            data=self.dummy_language
+            data=self.dummy_language,
+            content_type='application/json'
         )
 
         new_doc = json.dumps({'name': 'foobar'})
 
         result = self.app.patch(
             '{}/9999'.format(self.language_endpoint),
-            data=new_doc
+            data=new_doc,
+            content_type='application/json'
         )
 
         self.assertEquals(

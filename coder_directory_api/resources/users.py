@@ -75,7 +75,7 @@ class UserList(Resource):
         User_id is automatically added if not provided.
         """
         try:
-            data = json.loads(request.data.decode('utf-8'))
+            data = request.get_json()
         except ValueError as e:
             abort(400)
 
@@ -133,7 +133,6 @@ class User(Resource):
             a message json with http status code.
         """
         try:
-            # doc = users_engine.find_one(user_id)['_id']
             result = users_engine.delete_one(user_id)
         except TypeError as e:
             print('TypeError', e)
@@ -166,7 +165,7 @@ class User(Resource):
         """
 
         try:
-            data = json.loads(request.data.decode('utf-8'))
+            data = request.get_json()
             user = users_engine.find_one(user_id)
             if not user:
                 return {'message': 'User not found'}, 404

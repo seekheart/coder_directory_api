@@ -7,7 +7,7 @@ MIT License, see LICENSE for details.
 
 from coder_directory_api.engines import LanguagesEngine
 from flask_restplus import Namespace, Resource, fields
-from flask import abort, request
+from flask import abort, request, redirect, url_for
 import json
 
 
@@ -60,7 +60,7 @@ class LanguageList(Resource):
     def post(self) -> tuple or dict:
         """Adds a language to collection if it does not exist or is synonym"""
         try:
-            data = json.loads(request.data.decode('utf-8'))
+            data = request.get_json()
         except ValueError as e:
             abort(400)
 
@@ -95,6 +95,7 @@ class Language(Resource):
         Returns:
             a json with the data if found or a message if not found.
         """
+
         payload = language_engine.find_one(language_id)
         if not payload:
             return {'message': 'Language not Found'}, 404
@@ -153,7 +154,7 @@ class Language(Resource):
             a message json with http status code
         """
         try:
-            data = json.loads(request.data.decode('utf-8'))
+            data = request.get_json()
             lang = language_engine.find_one(language_id)
             if not lang:
                 return {'message': 'Language Not Found!'}, 404
