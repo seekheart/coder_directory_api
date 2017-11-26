@@ -24,9 +24,12 @@ MONGO = {
     'db': creds['db_name']
 }
 
+SECRET_KEY = creds['secretKey']
+
 if ENV == 'DEV':
     DEBUG = True
     MULTITHREADING = False
+
 elif ENV == 'PROD':
     DEBUG = False
     MULTITHREADING = True
