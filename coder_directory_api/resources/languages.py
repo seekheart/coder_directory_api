@@ -7,6 +7,7 @@ MIT License, see LICENSE for details.
 
 from coder_directory_api.engines import LanguagesEngine
 from flask import abort, request, Blueprint
+from flask_dance.contrib.google import google
 import json
 
 # setup language resource blueprint
@@ -25,6 +26,11 @@ def language_list() -> tuple:
     Returns:
         Tuple containing json message or data with status code.
     """
+
+    # if not google.authorized:
+    #     msg = {'message': 'Unauthorized'}
+    #     return json.dumps(msg), 401
+
     if request.method == 'GET':
         data = json.dumps(language_engine.find_all())
         return data, 200

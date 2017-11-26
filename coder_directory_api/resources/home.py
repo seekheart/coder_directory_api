@@ -5,10 +5,12 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from flask import Blueprint
+from flask import Blueprint, redirect, url_for
 import json
+from flask_dance.contrib.google import google
 
 api = Blueprint('/', __name__)
+
 
 @api.route('/')
 def home() -> tuple:
@@ -18,6 +20,8 @@ def home() -> tuple:
         Tuple with json containing resources available and http status code.
     """
 
+    # if not google.authorized:
+    #     return redirect(url_for('google.login'))
     available = [
         {
             'languages': 'Programming languages resource',

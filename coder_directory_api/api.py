@@ -9,7 +9,7 @@ import flask
 import coder_directory_api.settings as settings
 import coder_directory_api.resources as resources
 from coder_directory_api.auth import google_bp
-from flask_dance.contrib.google import google
+from werkzeug.contrib.fixers import ProxyFix
 
 
 def create_app() -> flask.Flask:
@@ -20,6 +20,7 @@ def create_app() -> flask.Flask:
     """
 
     api = flask.Flask('__name__')
+    api.wsgi_app = ProxyFix(api.wsgi_app)
     api.url_map.strict_slashes = False
     api.secret_key = settings.SECRET_KEY
     api.register_blueprint(
@@ -41,16 +42,6 @@ def create_app() -> flask.Flask:
 
 if __name__ == '__main__':
     app = create_app()
-
-    @app.route('/test')
-    def test():
-        if not google.authorized:
-            return flask.redirect(flask.url_for('google.login'))
-        res = google.get('/oauth2/v2/userinfo')
-        print(res.json())
-        return 'Your email is {}'.format(res.json()['email'])
-
-
     app.run(host=settings.HOST,
             port=settings.PORT,
             debug=settings.DEBUG,
