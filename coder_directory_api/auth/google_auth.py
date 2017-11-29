@@ -5,6 +5,8 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
+
+from coder_directory_api.settings import GOOGLE, BASE_URL
 from flask_dance.contrib.google import make_google_blueprint
 from flask_dance.contrib.google import google
 from flask import redirect, url_for
@@ -12,13 +14,13 @@ from .google_auth_engine import GoogleAuthEngine
 from functools import wraps
 
 
-backend = GoogleAuthEngine()
+# backend = GoogleAuthEngine()
 google_bp = make_google_blueprint(
-    client_id='551381493649-bh5ll1k1433ob4t2u0bsearqt4ul81q0.apps.googleusercontent.com',
-    client_secret='uJJejrWskjy1U8OU0zRcdiNR',
+    client_id=GOOGLE['client_id'],
+    client_secret=GOOGLE['client_secret'],
     scope=['profile', 'email'],
-    redirect_url='/api',
-    backend=backend
+    redirect_url=BASE_URL,
+    # backend=backend
 )
 
 

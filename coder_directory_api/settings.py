@@ -24,6 +24,11 @@ MONGO = {
     'db': creds['db_name']
 }
 
+GOOGLE = {
+    'client_id': creds['client_id'],
+    'client_secret': creds['client_secret']
+}
+
 SECRET_KEY = creds['secretKey']
 
 if ENV == 'DEV':
