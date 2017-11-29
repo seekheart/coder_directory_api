@@ -35,7 +35,10 @@ def create_app() -> flask.Flask:
         resources.home_api,
         url_prefix=settings.BASE_URL
     )
-    api.register_blueprint(google_bp)
+    api.register_blueprint(
+        google_bp,
+        url_prefix=settings.BASE_URL
+    )
 
     return api
 
