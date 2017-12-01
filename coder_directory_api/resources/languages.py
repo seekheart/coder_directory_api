@@ -7,7 +7,6 @@ MIT License, see LICENSE for details.
 
 from coder_directory_api.engines import LanguagesEngine
 from flask import abort, request, Blueprint
-from coder_directory_api.auth import authorized
 import json
 
 # setup language resource blueprint
@@ -19,7 +18,6 @@ language_engine = LanguagesEngine()
 
 # Define routes
 @api.route('/', methods=['GET', 'POST'])
-@authorized
 def language_list() -> tuple:
     """GET and POST operations on Languages Resource.
     For POST, data must be in json format.
@@ -27,10 +25,6 @@ def language_list() -> tuple:
     Returns:
         Tuple containing json message or data with status code.
     """
-
-    # if not google.authorized:
-    #     msg = {'message': 'Unauthorized'}
-    #     return json.dumps(msg), 401
 
     if request.method == 'GET':
         data = json.dumps(language_engine.find_all())
@@ -59,7 +53,6 @@ def language_list() -> tuple:
 
 
 @api.route('/<int:language_id>', methods=['GET', 'DELETE', 'PATCH'])
-@authorized
 def language_single(language_id: int) -> tuple:
     """GET, DELETE, PATCH operations for a single language given a language_id
 

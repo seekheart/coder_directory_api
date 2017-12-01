@@ -7,7 +7,6 @@ MIT License, see LICENSE for details.
 
 from flask import abort, request, Blueprint
 from coder_directory_api.engines import UsersEngine
-from coder_directory_api.auth import authorized
 import json
 
 # setup the users resource
@@ -18,7 +17,6 @@ users_engine = UsersEngine()
 
 
 @api.route('/', methods=['GET', 'POST'])
-@authorized
 def users_list()-> tuple:
     """GET and POST Operations for Users Resource.
     For POST, data must be posted in JSON format.
@@ -57,7 +55,6 @@ def users_list()-> tuple:
 
 
 @api.route('/<int:user_id>', methods=['GET', 'DELETE', 'PATCH'])
-@authorized
 def user_single(user_id: int) -> tuple:
     """GET, PATCH, DELETE operations for a single User of Users Resource by user
     id.

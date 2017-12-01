@@ -7,12 +7,10 @@ MIT License, see LICENSE for details.
 
 from flask import Blueprint
 import json
-from coder_directory_api.auth import authorized
 
 api = Blueprint('/', __name__)
 
 @api.route('/')
-@authorized
 def home() -> tuple:
     """Home resource returns all available api resources in JSON
 
