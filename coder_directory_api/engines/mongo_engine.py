@@ -10,10 +10,11 @@ import coder_directory_api.settings as settings
 
 
 class MongoEngine:
-    def __init__(self, collection: str) -> None:
+    def __init__(self, collection: str, key_manager: bool =True) -> None:
         """Constructor for mongodb connection
         Args:
-            collection_name: name of collection to operate on
+            collection_name: name of collection to operate on.
+            key_manager: sets up an automatic unique id manager, default is on.
         """
 
         self._host = settings.MONGO['host']
@@ -26,7 +27,9 @@ class MongoEngine:
             self.db = self.db.get_collection(self._collection)
         except ConnectionError:
             print('Error connecting to database!')
-        self._max_id = self._set_max_id()
+
+        if key_manager:
+            self._max_id = self._set_max_id()
 
     def _set_max_id(self):
         """private method to set the max id based on the collection's state"""

@@ -29,11 +29,11 @@ class TestUsersEngine(unittest.TestCase):
 
     def tearDown(self):
         """Clean up protocol after each test case"""
-        self.engine = None
         try:
             self.engine.delete_one(99999)
         except AttributeError as e:
             pass
+        self.engine = None
 
     def test_find_all(self):
         """Test if engine can return entire user collection"""
