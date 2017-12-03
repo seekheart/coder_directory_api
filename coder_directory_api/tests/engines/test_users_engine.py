@@ -9,7 +9,7 @@ import unittest
 from coder_directory_api import users_engine
 
 
-class TestUsersEngine(unittest.TestCase):
+class UsersEngineTest(unittest.TestCase):
     def setUp(self):
         """Setup testing environment for each test case"""
         self.engine = users_engine.UsersEngine()

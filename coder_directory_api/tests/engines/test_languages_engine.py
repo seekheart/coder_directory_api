@@ -10,7 +10,7 @@ import unittest
 from coder_directory_api.engines import LanguagesEngine
 
 
-class TestLanguagesEngine(unittest.TestCase):
+class LanguagesEngineTest(unittest.TestCase):
     def setUp(self):
         """Setup testing environment for each test case"""
         self.engine = LanguagesEngine()

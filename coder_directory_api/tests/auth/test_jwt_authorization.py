@@ -12,7 +12,7 @@ import jwt
 import datetime
 
 
-class TestJwtAuthorization(unittest.TestCase):
+class JwtAuthorizationTest(unittest.TestCase):
     def setUp(self):
         """Set up each test environment prior to running"""
 

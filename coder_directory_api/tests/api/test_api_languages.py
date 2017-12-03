@@ -1,5 +1,5 @@
 """
-Tests for Languages Resource of Coder Directory app
+Tests for Languages Resource
 
 Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.

@@ -10,7 +10,7 @@ import datetime
 from coder_directory_api import auth_engine
 
 
-class TestAuthEngine(unittest.TestCase):
+class AuthEngineTest(unittest.TestCase):
     def setUp(self):
         """Setup testing environment for each test case"""
         self.engine = auth_engine.AuthEngine()
