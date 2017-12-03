@@ -19,9 +19,9 @@ mongoimport --db coder \
 --jsonArray
 echo Language data seeded!
 
-echo Seeding auth data...
+echo Seeding secrets...
 mongoimport --db coder \
---collection auth \
+--collection secrets \
 --file mock_data/auth.json \
 --jsonArray
-echo Auth data seeded!
+echo secrets data seeded!

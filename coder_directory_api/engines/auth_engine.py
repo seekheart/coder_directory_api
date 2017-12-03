@@ -9,7 +9,10 @@ from .mongo_engine import MongoEngine
 
 class AuthEngine(MongoEngine):
     def __init__(self):
-        super(AuthEngine, self).__init__(collection='auth', key_manager=False)
+        super(AuthEngine, self).__init__(
+            collection='secrets',
+            key_manager=False
+        )
 
     def find_all(self) -> list:
         """
@@ -21,7 +24,7 @@ class AuthEngine(MongoEngine):
 
         return [d for d in self.db.find()]
 
-    def find_one(self, user: str) -> dict:
+    def find_one(self, user: str) -> dict or bool:
         """
         find one user's credentials.
 
@@ -33,7 +36,13 @@ class AuthEngine(MongoEngine):
 
         """
 
-        return self.db.find_one({'user': user})
+        data = self.db.find_one({'user': user})
+
+        try:
+            len(data)
+        except TypeError:
+            return False
+        return data
 
     def add_one(self, secret: dict) -> bool:
         """

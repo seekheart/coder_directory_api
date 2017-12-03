@@ -20,11 +20,15 @@ class TestAuthEngine(unittest.TestCase):
             'refreshToken': 'efoianeopf',
             'user': 'dummy',
         }
+        try:
+            self.engine.delete_one('dummy')
+        except AttributeError:
+            pass
 
     def tearDown(self):
         """Clean up protocol after each test case"""
         try:
-            self.engine.delete_one(99)
+            self.engine.delete_one('dummy')
         except AttributeError:
             pass
         self.engine = None
@@ -47,6 +51,11 @@ class TestAuthEngine(unittest.TestCase):
             'seekheart',
             msg='Expected user to be seekheart'
         )
+
+    def test_find_one_none(self):
+        """Test if engine can return nothing if no user found"""
+        result = self.engine.find_one('abc')
+        self.assertFalse(result, msg='Expected no results')
 
     def test_add_one(self):
         """Test if engine can add auth credentials"""

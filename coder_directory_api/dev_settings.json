@@ -2,7 +2,5 @@
   "db_name": "coder",
   "db_host": "localhost",
   "db_port": 27017,
-  "secretKey": "asdf",
-  "client_id":"551381493649-bh5ll1k1433ob4t2u0bsearqt4ul81q0.apps.googleusercontent.com",
-  "client_secret": "uJJejrWskjy1U8OU0zRcdiNR"
+  "secretKey": "asdf"
 }
