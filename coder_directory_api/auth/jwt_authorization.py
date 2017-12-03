@@ -30,10 +30,15 @@ def check_token(token) -> bool:
     result = True
     try:
         decoded_token = jwt.decode(token, secret)
-    except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError):
+        user = auth_engine.find_one(decoded_token['user'])
+    except (
+            jwt.ExpiredSignatureError,
+            jwt.DecodeError,
+            jwt.InvalidTokenError,
+            KeyError
+    ):
         result = False
     else:
-        user = auth_engine.find_one(decoded_token['user'])
         if not user:
             auth_engine.add_one(decoded_token)
 
