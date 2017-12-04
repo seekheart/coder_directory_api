@@ -62,6 +62,13 @@ class AuthEngineTest(unittest.TestCase):
         result = self.engine.add_one(self.dummy_creds)
         self.assertTrue(result, msg='Expected creds to be added')
 
+    def test_add_one_dupe(self):
+        """Test if engine will bounce deplicate auth credentials"""
+        self.engine.add_one(self.dummy_creds)
+        result = self.engine.add_one(self.dummy_creds)
+
+        self.assertFalse(result)
+
     def test_delete_one(self):
         """Test if engine can delete auth credentials by username"""
         self.engine.add_one(self.dummy_creds)

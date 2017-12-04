@@ -6,6 +6,8 @@ MIT License, see LICENSE for details
 """
 
 from .mongo_engine import MongoEngine
+import uuid
+
 
 class AuthEngine(MongoEngine):
     def __init__(self):
@@ -22,7 +24,12 @@ class AuthEngine(MongoEngine):
             list of auth credentials.
         """
 
-        return [d for d in self.db.find()]
+        data = []
+        for doc in self.db.find():
+            doc['_id'] = str(doc['_id'])
+            data.append(doc)
+
+        return data
 
     def find_one(self, user: str) -> dict or bool:
         """
@@ -39,9 +46,10 @@ class AuthEngine(MongoEngine):
         data = self.db.find_one({'user': user})
 
         try:
-            len(data)
+            data['_id'] = str(data['_id'])
         except TypeError:
             return False
+
         return data
 
     def add_one(self, secret: dict) -> bool:
@@ -66,6 +74,7 @@ class AuthEngine(MongoEngine):
             return False
 
         try:
+            secret['_id'] = str(uuid.uuid4())
             self.db.insert_one(secret)
         except AttributeError:
             print('Unable to add secrets')

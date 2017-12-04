@@ -13,7 +13,7 @@ class LoginResourceTest(CommonApiTest):
         """Setup login resource test environment"""
         super(LoginResourceTest, self).setUp()
         self.endpoint = '{}/login'.format(self.base_url)
-        self.dummy = json.dumps({'user': 'test', 'pass': 'defe'})
+        self.dummy = json.dumps({'user': 'test', 'password': 'defe'})
 
     def tearDown(self):
         """Teardown Login Tests"""

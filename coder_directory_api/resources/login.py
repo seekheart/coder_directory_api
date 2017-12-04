@@ -8,7 +8,7 @@ MIT License, see LICENSE for details.
 import flask
 import json
 import coder_directory_api.engines as engines
-
+import coder_directory_api.auth as auth
 
 api = flask.Blueprint('login', __name__)
 auth_engine = engines.AuthEngine()
@@ -26,7 +26,19 @@ def login() -> tuple:
         message = {'message': 'Please send user and password for login'}
         return json.dumps(message), 200
     elif flask.request.method == 'POST':
-        # TODO add real user password authentication
         user = flask.request.json
-        if user:
-            return json.dumps({'fakeToken': 123}), 200
+        user_doc = auth_engine.find_one(user['user'])
+
+        if user_doc and user_doc['password'] == user['password']:
+            try:
+                payload = {
+                    'access_token': user_doc['access_token'],
+                    'refresh_token': user_doc['refresh_token']
+                }
+            except KeyError:
+                payload = auth.make_token(user_doc['user'])
+            finally:
+                payload = json.dumps(payload)
+
+        return payload
+
