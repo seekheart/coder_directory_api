@@ -53,3 +53,16 @@ class LoginResourceTest(CommonApiTest):
             result.data,
             msg='Expected token to be returned in json response'
         )
+
+    def test_post_wrong(self):
+        """Test POST request with wrong login"""
+        result = self.app.post(
+            self.endpoint,
+            data={'user': 'bob'},
+            content_type='application/json'
+        )
+        self.assertEqual(
+            result.status_code,
+            400,
+            msg='Expected invalid user/password 400 status code'
+        )

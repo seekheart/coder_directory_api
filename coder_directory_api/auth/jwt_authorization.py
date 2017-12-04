@@ -14,9 +14,10 @@ import coder_directory_api.settings as settings
 import coder_directory_api.engines as engines
 import uuid
 
-
+# set some global helpers
 auth_engine = engines.AuthEngine()
 secret = settings.SECRET_KEY
+
 
 def check_token(token) -> bool:
     """

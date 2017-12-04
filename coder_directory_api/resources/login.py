@@ -39,6 +39,8 @@ def login() -> tuple:
                 payload = auth.make_token(user_doc['user'])
             finally:
                 payload = json.dumps(payload)
-
-        return payload
+                return payload
+        else:
+            message = {'message': 'Invalid user/password'}
+            return json.dumps(message), 400
 
