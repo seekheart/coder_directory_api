@@ -26,9 +26,10 @@ class LoginResourceTest(CommonApiTest):
         self.engine = AuthEngine()
 
         self.engine.add_one(self.dummy)
-        make_token('test')
+        dummy_tokens = make_token('test')
         self.dummy = self.engine.find_one(user='test')
-        print(self.dummy)
+        self.dummy['access_token'] = dummy_tokens['access_token']
+        self.dummy['refresh_token'] = dummy_tokens['refresh_token']
         self.dummy = json.dumps(self.dummy)
 
     def tearDown(self):
@@ -104,7 +105,6 @@ class LoginResourceTest(CommonApiTest):
         )
 
         data = json.loads(result.data.decode('utf-8'))
-        print(data)
         self.assertEqual(
             5,
             len(data),
