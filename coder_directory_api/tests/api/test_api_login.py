@@ -19,11 +19,16 @@ class LoginResourceTest(CommonApiTest):
         """Setup login resource test environment"""
         super(LoginResourceTest, self).setUp()
         self.endpoint = '{}/login'.format(self.base_url)
-        self.dummy = make_token('test')
-        self.dummy['password'] = 'defe'
+        self.dummy = {
+            'user': 'test',
+            'password': 'defe'
+        }
         self.engine = AuthEngine()
 
         self.engine.add_one(self.dummy)
+        make_token('test')
+        self.dummy = self.engine.find_one(user='test')
+        print(self.dummy)
         self.dummy = json.dumps(self.dummy)
 
     def tearDown(self):
@@ -99,7 +104,7 @@ class LoginResourceTest(CommonApiTest):
         )
 
         data = json.loads(result.data.decode('utf-8'))
-
+        print(data)
         self.assertEqual(
             5,
             len(data),
