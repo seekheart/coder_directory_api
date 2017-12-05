@@ -6,19 +6,30 @@ MIT License, see LICENSE for details.
 """
 
 from .common_test_setup import CommonApiTest
+from coder_directory_api.engines import AuthEngine
 import json
+
 
 class LoginResourceTest(CommonApiTest):
     def setUp(self):
         """Setup login resource test environment"""
         super(LoginResourceTest, self).setUp()
         self.endpoint = '{}/login'.format(self.base_url)
-        self.dummy = json.dumps({'user': 'test', 'password': 'defe'})
+        self.dummy = {'user': 'test', 'password': 'defe'}
+        self.engine = AuthEngine()
+
+        self.engine.add_one(self.dummy)
+        self.dummy = json.dumps(self.dummy)
 
     def tearDown(self):
         """Teardown Login Tests"""
         super(LoginResourceTest, self).tearDown()
         self.dummy = None
+        try:
+            self.engine.delete_one(user='test')
+        except AttributeError:
+            pass
+        self.engine = None
 
     def test_get(self):
         """Test a GET request on login resource"""
