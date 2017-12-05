@@ -38,7 +38,7 @@ def refresh_token(token) -> dict or None:
         return None
 
     ref_token = auth_engine.find_one(user=user)
-    ref_token = jwt.decode(ref_token['refresh_token'], secret)
+    ref_token = ref_token['refresh_token']
 
     if ref_token == token['refresh_token']:
         token['access_token']['exp'] = datetime.datetime.utcnow() + \
@@ -126,9 +126,10 @@ def make_token(user: str) -> dict:
         for unauthenticated clients.
     """
 
-    refresh_token = {
+    renew_token = {
         'iss': 'coder directory',
         'sub': user,
+        'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
         'jti': str(uuid.uuid4()),
         'iat': make_timestamp(),
     }
@@ -136,19 +137,24 @@ def make_token(user: str) -> dict:
     access_token = {
         'iss': 'coder directory',
         'user': user,
+        'jti': str(uuid.uuid4()),
+        'iat': make_timestamp(),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
     }
 
-    payload = {
-        'user': user,
-        'access_token': jwt.encode(access_token, secret).decode('utf-8'),
-        'refresh_token': jwt.encode(refresh_token, secret).decode('utf-8')
+    tokens = {
+        'access_token': access_token,
+        'refresh_token': renew_token
     }
 
-    try:
-        auth_engine.edit_one(user=user, doc=payload)
-    except AttributeError:
-        return {'message': 'invalid user'}
+    auth_engine.edit_one(user=user, doc=tokens)
+
+    payload = {
+        'user': user,
+        'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
+        'access_token': jwt.encode(access_token, secret).decode('utf-8'),
+        'refresh_token': jwt.encode(renew_token, secret).decode('utf-8')
+    }
 
     return payload
 

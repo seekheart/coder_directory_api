@@ -105,18 +105,19 @@ class AuthEngine(MongoEngine):
         Edits a user's auth credential.
 
         Args:
-            user:
-            doc:
+            user: username to search for.
+            doc: new data to update.
 
         Returns:
             Indicator as to whether auth doc was updated or not.
         """
 
-        lookup = {'username': user}
+        lookup = {'user': user}
         try:
             self.db.update_one(lookup, {'$set': doc})
             result = True
         except AttributeError:
             result = False
+
         return result
 

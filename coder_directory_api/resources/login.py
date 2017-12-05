@@ -24,25 +24,18 @@ def login() -> tuple:
 
     if flask.request.method == 'GET':
         message = {'message': 'Please send user and password for login'}
-        return json.dumps(message), 200
+        return flask.jsonify(message), 200
     elif flask.request.method == 'POST':
         user = flask.request.json
         user_doc = auth_engine.find_one(user['user'])
 
         if user_doc and user_doc['password'] == user['password']:
-            try:
-                payload = {
-                    'access_token': user_doc['access_token'],
-                    'refresh_token': user_doc['refresh_token']
-                }
-            except KeyError:
-                payload = auth.make_token(user_doc['user'])
-            finally:
-                payload = json.dumps(payload)
-                return payload
+            payload = auth.make_token(user_doc['user'])
+            payload = flask.jsonify(payload)
+            return payload, 200
         else:
             message = {'message': 'Invalid user/password'}
-            return json.dumps(message), 400
+            return flask.jsonify(message), 400
 
 
 @api.route('/token', methods=['GET', 'POST'])
@@ -58,13 +51,12 @@ def refresh() -> tuple:
 
     if flask.request.method == 'GET':
         message = {'message': 'Please send tokens to refresh access'}
-        return json.dumps(message), 200
+        return flask.jsonify(message), 200
     elif flask.request.method == 'POST':
         data = flask.request.json
         payload = auth.refresh_token(data)
-
         if payload is None:
             message = {'message': 'Access token has expired please re-login'}
-            return json.dumps(message), 400
+            return flask.jsonify(message), 400
 
-        return json.dumps(payload), 200
+        return flask.jsonify(payload), 200
