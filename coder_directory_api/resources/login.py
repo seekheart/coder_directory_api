@@ -44,3 +44,27 @@ def login() -> tuple:
             message = {'message': 'Invalid user/password'}
             return json.dumps(message), 400
 
+
+@api.route('/token', methods=['GET', 'POST'])
+def refresh() -> tuple:
+    """
+    Refresh token resource allows users to renew their access token before
+    expiration.
+
+    Returns:
+        Tuple with json containing refreshed token or message with http status
+        code.
+    """
+
+    if flask.request.method == 'GET':
+        message = {'message': 'Please send tokens to refresh access'}
+        return json.dumps(message), 200
+    elif flask.request.method == 'POST':
+        data = flask.request.json
+        payload = auth.refresh_token(data)
+
+        if payload is None:
+            message = {'message': 'Access token has expired please re-login'}
+            return json.dumps(message), 400
+
+        return json.dumps(payload), 200

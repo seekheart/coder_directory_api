@@ -19,6 +19,44 @@ auth_engine = engines.AuthEngine()
 secret = settings.SECRET_KEY
 
 
+def refresh_token(token) -> dict or None:
+    """
+    JWT access token refresh method.
+
+    Args:
+        token: payload containing jwt access token to refresh and refresh token.
+
+    Returns:
+        refreshed jwt token payload.
+    """
+
+    try:
+        user = token['user']
+        token['access_token'] = jwt.decode(token['access_token'], secret)
+        token['refresh_token'] = jwt.decode(token['refresh_token'], secret)
+    except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError):
+        return None
+
+    ref_token = auth_engine.find_one(user=user)
+    ref_token = jwt.decode(ref_token['refresh_token'], secret)
+
+    if ref_token == token['refresh_token']:
+        token['access_token']['exp'] = datetime.datetime.utcnow() + \
+                                       datetime.timedelta(minutes=5)
+    else:
+        return None
+
+    token['access_token'] = jwt.encode(
+                                token['access_token'], secret
+                            ).decode('utf-8')
+    token['refresh_token'] = jwt.encode(
+                                token['refresh_token'], secret
+                            ).decode('utf-8')
+
+    auth_engine.edit_one(user=user, doc=token)
+    return token
+
+
 def check_token(token) -> bool:
     """
     Checks the provided authorization header for token and validates.
@@ -43,7 +81,7 @@ def check_token(token) -> bool:
         result = False
     else:
         if not user:
-            auth_engine.add_one(decoded_token)
+            result = False
 
     return result
 
@@ -58,6 +96,7 @@ def token_required(f):
     Returns:
         The view function if authorized else 401 http response.
     """
+
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         auth = flask.request.authorization
@@ -71,6 +110,7 @@ def token_required(f):
             return json.dumps(message), 401
 
         return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -122,5 +162,3 @@ def make_timestamp() -> int:
     """
     date = int(datetime.datetime.utcnow().strftime('%s')) * 1000
     return date
-
-

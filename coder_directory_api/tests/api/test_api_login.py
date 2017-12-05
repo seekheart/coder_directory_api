@@ -7,7 +7,11 @@ MIT License, see LICENSE for details.
 
 from .common_test_setup import CommonApiTest
 from coder_directory_api.engines import AuthEngine
+from coder_directory_api.auth import make_token
 import json
+import jwt
+from coder_directory_api.settings import SECRET_KEY
+import datetime
 
 
 class LoginResourceTest(CommonApiTest):
@@ -15,7 +19,8 @@ class LoginResourceTest(CommonApiTest):
         """Setup login resource test environment"""
         super(LoginResourceTest, self).setUp()
         self.endpoint = '{}/login'.format(self.base_url)
-        self.dummy = {'user': 'test', 'password': 'defe'}
+        self.dummy = make_token('test')
+        self.dummy['password'] = 'defe'
         self.engine = AuthEngine()
 
         self.engine.add_one(self.dummy)
@@ -36,8 +41,8 @@ class LoginResourceTest(CommonApiTest):
         result = self.app.get(self.endpoint)
 
         self.assertEqual(
-            result.status_code,
             200,
+            result.status_code,
             msg='Expected GET request to return 200 status'
         )
 
@@ -55,8 +60,8 @@ class LoginResourceTest(CommonApiTest):
         )
 
         self.assertEqual(
-            result.status_code,
             200,
+            result.status_code,
             msg='expected api to accept json payload'
         )
 
@@ -73,7 +78,56 @@ class LoginResourceTest(CommonApiTest):
             content_type='application/json'
         )
         self.assertEqual(
-            result.status_code,
             400,
+            result.status_code,
             msg='Expected invalid user/password 400 status code'
+        )
+
+
+    def test_refresh_token(self):
+        """Test if POST request can refresh a token"""
+        result = self.app.post(
+            '{}/token'.format(self.endpoint),
+            data=self.dummy,
+            content_type='application/json'
+        )
+
+        self.assertEqual(
+            result.status_code,
+            200,
+            msg='Expected status code to be 200'
+        )
+
+        data = json.loads(result.data.decode('utf-8'))
+
+        self.assertEqual(
+            5,
+            len(data),
+            msg='Expected payload of 4 keys to return'
+        )
+
+    def test_refresh_expired_token(self):
+        """Test if POST request will bounce bad tokens"""
+        dummy = json.loads(self.dummy)
+
+        dummy['access_token'] = {
+            'iss': 'coder directory',
+            'user': dummy['user'],
+            'exp': datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        }
+        dummy['access_token'] = jwt.encode(
+            dummy['access_token'], SECRET_KEY
+        ).decode('utf-8')
+        dummy = json.dumps(dummy)
+
+        result = self.app.post(
+            '{}/token'.format(self.endpoint),
+            data=dummy,
+            content_type='application/json'
+        )
+
+        self.assertEqual(
+            400,
+            result.status_code,
+            msg='Expected token refresh to fail.'
         )

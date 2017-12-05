@@ -12,7 +12,7 @@ import coder_directory_api.engines as engines
 api = flask.Blueprint('register', __name__)
 auth_engine = engines.AuthEngine()
 
-# TODO write tests and add bp to api
+
 @api.route('/', methods=['GET', 'POST'])
 def register() -> tuple:
     """register resource allows creation of user accounts for access to
@@ -31,7 +31,12 @@ def register() -> tuple:
         return json.dumps(message), 200
     elif flask.request.method == 'POST':
         user = flask.request.json
-        result = auth_engine.add_one(user)
+
+        if 'user' in user and 'password' in user:
+            result = auth_engine.add_one(user)
+        else:
+            message = {'message': 'Missing user/password!'}
+            return json.dumps(message), 400
 
         if result:
             message = {'message': 'Successfully registered'}

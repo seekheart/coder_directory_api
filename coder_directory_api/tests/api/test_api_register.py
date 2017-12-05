@@ -45,3 +45,33 @@ class RegisterResourceTest(CommonApiTest):
             201,
             msg='Expected status code to be 201 from registration'
         )
+
+    def test_register_user_no_password(self):
+        """Test if user registration works without password"""
+        test = {'user': 'asdf'}
+        result = self.app.post(
+            self.endpoint,
+            data=json.dumps(test),
+            content_type='application/json'
+        )
+
+        self.assertEquals(
+            result.status_code,
+            400,
+            msg='Expected 400 bad request from missing password'
+        )
+
+    def test_register_no_user(self):
+        """Test if user registration works without password"""
+        test = {'password': 'asdf'}
+        result = self.app.post(
+            self.endpoint,
+            data=json.dumps(test),
+            content_type='application/json'
+        )
+
+        self.assertEquals(
+            result.status_code,
+            400,
+            msg='Expected 400 bad request from missing password'
+        )
