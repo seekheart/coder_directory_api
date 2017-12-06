@@ -15,7 +15,8 @@ class LanguagesEngine(MongoEngine):
         super(LanguagesEngine, self).__init__('languages')
 
     def find_all(self) -> list:
-        """find all languages
+        """
+        find all languages
 
         Returns:
             list of programming languages in languages collection sorted by _id
@@ -99,8 +100,8 @@ class LanguagesEngine(MongoEngine):
         return result
 
     def edit_one(self, lang_id: int, lang_doc: dict) -> bool:
-        """method to edit a language's document given a document with diff and
-        _id of document to edit.
+        """
+        Edits a language document with new data.
 
         Args:
             lang_id: unique id of language to be updated.

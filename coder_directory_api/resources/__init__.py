@@ -5,22 +5,20 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from flask_restplus import Api
-from flask import Blueprint
-from .users import api as users_api
+
+__all__ = ['api_resources']
+
 from .languages import api as languages_api
-from coder_directory_api.settings import BASE_URL
+from .users import api as users_api
+from .home import api as home_api
+from .login import api as login_api
+from .register import api as register_api
 
-
-# Register Blueprint for app based on all available resources
-blueprint = Blueprint('api', __name__, url_prefix=BASE_URL)
-api = Api(
-    blueprint,
-    version='1.0.0',
-    title='Coder Directory Api',
-    description='A coder directory rest api for managing coders'
-)
-
-# Register resource with api name space
-api.add_namespace(users_api)
-api.add_namespace(languages_api)
+# Create a list of resource objects to register in api
+api_resources = [
+    {'bp': languages_api, 'route': 'languages'},
+    {'bp': users_api, 'route': 'users'},
+    {'bp': home_api, 'route': None},
+    {'bp': login_api, 'route': 'login'},
+    {'bp': register_api, 'route': 'register'}
+]

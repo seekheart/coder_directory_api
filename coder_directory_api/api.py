@@ -7,7 +7,9 @@ MIT License, see LICENSE for details.
 
 import flask
 import coder_directory_api.settings as settings
-from coder_directory_api.resources import blueprint
+import coder_directory_api.resources as resources
+from flask_cors import CORS
+from werkzeug.contrib.fixers import ProxyFix
 
 
 def create_app() -> flask.Flask:
@@ -18,10 +20,31 @@ def create_app() -> flask.Flask:
     """
 
     api = flask.Flask('__name__')
+    CORS(api)
+    api.wsgi_app = ProxyFix(api.wsgi_app)
     api.url_map.strict_slashes = False
-    api.register_blueprint(blueprint)
+
+    for rsc in resources.api_resources:
+
+        register_resources(
+            api,
+            bp=rsc['bp'],
+            route=rsc['route']
+        )
+
     return api
 
+
+def register_resources(api, bp, route=None):
+    if route:
+        return api.register_blueprint(
+            bp,
+            url_prefix='{}/{}'.format(settings.BASE_URL, route)
+        )
+    return api.register_blueprint(
+        bp,
+        url_prefix=settings.BASE_URL
+    )
 
 if __name__ == '__main__':
     app = create_app()

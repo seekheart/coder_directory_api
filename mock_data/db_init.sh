@@ -18,3 +18,10 @@ mongoimport --db coder \
 --file mock_data/languages.json \
 --jsonArray
 echo Language data seeded!
+
+echo Seeding secrets...
+mongoimport --db coder \
+--collection secrets \
+--file mock_data/auth.json \
+--jsonArray
+echo secrets data seeded!
