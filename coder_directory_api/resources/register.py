@@ -5,11 +5,10 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-import flask
-import json
+from flask import Blueprint,  jsonify, request
 import coder_directory_api.engines as engines
 
-api = flask.Blueprint('register', __name__)
+api = Blueprint('register', __name__)
 auth_engine = engines.AuthEngine()
 
 
@@ -22,28 +21,28 @@ def register() -> tuple:
         Tuple with json containing token or message with http status code.
     """
 
-    if flask.request.method == 'GET':
+    if request.method == 'GET':
         template = {'user': 'username', 'password': 'password'}
         message = {
             'message': 'please send following payload in POST to register',
             'template': template
         }
-        return json.dumps(message), 200
-    elif flask.request.method == 'POST':
-        user = flask.request.json
+        return jsonify(message), 200
+    elif request.method == 'POST':
+        user = request.json
 
         if 'user' in user and 'password' in user:
             result = auth_engine.add_one(user)
         else:
             message = {'message': 'Missing user/password!'}
-            return json.dumps(message), 400
+            return jsonify(message), 400
 
         if result:
             message = {'message': 'Successfully registered'}
-            return json.dumps(message), 201
+            return jsonify(message), 201
 
         message = {'message': 'User {user} already exists'.format(**user)}
-        return json.dumps(message), 409
+        return jsonify(message), 409
 
 
 

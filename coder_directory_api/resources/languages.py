@@ -5,19 +5,20 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-import coder_directory_api.engines as engines
-import flask
-import json
+from coder_directory_api.engines import LanguagesEngine
+from flask import abort, request, jsonify, Blueprint
+from coder_directory_api.auth import token_required
 
 # setup language resource blueprint
-api = flask.Blueprint('languages', __name__)
+api = Blueprint('languages', __name__)
 
 # Instantiate database engine
-language_engine = engines.LanguagesEngine()
+language_engine = LanguagesEngine()
 
 
 # Define routes
 @api.route('/', methods=['GET', 'POST'])
+@token_required
 def language_list() -> tuple:
     """GET and POST operations on Languages Resource.
     For POST, data must be in json format.
@@ -26,14 +27,14 @@ def language_list() -> tuple:
         Tuple containing json message or data with status code.
     """
 
-    if flask.request.method == 'GET':
-        data = json.dumps(language_engine.find_all())
+    if request.method == 'GET':
+        data = jsonify(language_engine.find_all())
         return data, 200
-    elif flask.request.method == 'POST':
+    elif request.method == 'POST':
         try:
-            data = flask.request.get_json()
+            data = request.get_json()
         except ValueError as e:
-            flask.abort(400)
+            abort(400)
         try:
             result = language_engine.add_one(data)
             if result:
@@ -41,18 +42,19 @@ def language_list() -> tuple:
                     'message': 'Successfully added new language',
                     'language_id': result
                 }
-                return json.dumps(msg), 201
+                return jsonify(msg), 201
             else:
                 msg = {'message': 'Not Modified'}
-                return json.dumps(msg), 304
+                return jsonify(msg), 304
         except AttributeError as e:
             msg = {'message': 'Language exists or is Synonym'}
-            return json.dumps(msg), 409
+            return jsonify(msg), 409
     else:
-        flask.abort(400)
+        abort(400)
 
 
 @api.route('/<int:language_id>', methods=['GET', 'DELETE', 'PATCH'])
+@token_required
 def language_single(language_id: int) -> tuple:
     """GET, DELETE, PATCH operations for a single language given a language_id
 
@@ -65,13 +67,13 @@ def language_single(language_id: int) -> tuple:
 
     payload = language_engine.find_one(language_id)
     if not payload:
-        msg = json.dumps({'message': 'Language Not Found'})
+        msg = jsonify({'message': 'Language Not Found'})
         return msg, 404
 
-    if flask.request.method == 'GET':
+    if request.method == 'GET':
 
-        return json.dumps(payload), 200
-    elif flask.request.method == 'DELETE':
+        return jsonify(payload), 200
+    elif request.method == 'DELETE':
         try:
             result = language_engine.delete_one(language_id)
         except TypeError as e:
@@ -81,22 +83,22 @@ def language_single(language_id: int) -> tuple:
 
         if result:
             msg = {'message': 'Accepted'}
-            return json.dumps(msg), 202
+            return jsonify(msg), 202
         else:
             msg = {'message': 'Internal Error'}
-            return json.dumps(msg), 500
-    elif flask.request.method == 'PATCH':
+            return jsonify(msg), 500
+    elif request.method == 'PATCH':
         try:
-            data = flask.request.get_json()
+            data = request.get_json()
             result = language_engine.edit_one(language_id, data)
         except AttributeError as e:
             msg = {'message': 'Bad Request'}
-            return json.dumps(msg), 400
+            return jsonify(msg), 400
         if result:
             msg = {'message': 'No Content'}
-            return json.dumps(msg), 204
+            return jsonify(msg), 204
         else:
             msg = {'message': 'Unprocessable Entity'}
-            return json.dumps(msg), 422
+            return jsonify(msg), 422
     else:
-        flask.abort(400)
+        abort(400)

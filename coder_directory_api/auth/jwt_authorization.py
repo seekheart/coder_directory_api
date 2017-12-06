@@ -8,7 +8,7 @@ MIT License, see LICENSE for details.
 import datetime
 import jwt
 import functools
-import flask
+from flask import request
 import json
 import coder_directory_api.settings as settings
 import coder_directory_api.engines as engines
@@ -71,7 +71,6 @@ def check_token(token) -> bool:
     result = True
     try:
         decoded_token = jwt.decode(token, secret)
-        user = auth_engine.find_one(decoded_token['user'])
     except (
             jwt.ExpiredSignatureError,
             jwt.DecodeError,
@@ -80,6 +79,7 @@ def check_token(token) -> bool:
     ):
         result = False
     else:
+        user = auth_engine.find_one(decoded_token['user'])
         if not user:
             result = False
 
@@ -99,8 +99,9 @@ def token_required(f):
 
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        auth = flask.request.authorization
+        auth = request.headers['Authorization'].split(' ')[1]
         message = {'message': 'Unauthorized'}
+
         if not auth:
             return json.dumps(message), 401
 

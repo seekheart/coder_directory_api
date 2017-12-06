@@ -7,7 +7,7 @@ MIT License, see LICENSE for details.
 
 from .common_test_setup import CommonApiTest
 import json
-import coder_directory_api.engines as engines
+from coder_directory_api import LanguagesEngine
 
 
 class LanguagesResourceTest(CommonApiTest):
@@ -15,7 +15,7 @@ class LanguagesResourceTest(CommonApiTest):
         """Setup Languages Tests"""
         super(LanguagesResourceTest, self).setUp()
         self.endpoint = '{}/languages'.format(self.base_url)
-        self.engine = engines.LanguagesEngine()
+        self.engine = LanguagesEngine()
         self.dummy = {
             "_id": 9999,
             "name": "test3",
@@ -35,17 +35,24 @@ class LanguagesResourceTest(CommonApiTest):
 
     def test_get_all_languages(self):
         """Test if all languages in language resource can be gotten"""
-        result = self.app.get(self.endpoint)
+        result = self.app.get(
+            self.endpoint,
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
+        )
 
         self.assertEquals(
             result.status_code,
             200,
-            msg='Expected 200 status on languages resource'
+            msg='Expected 200 status on languages resource',
+
         )
 
     def test_get_one_language(self):
         """Test if a single language can be gotten from language resource"""
-        result = self.app.get('{}/1'.format(self.endpoint))
+        result = self.app.get(
+            '{}/1'.format(self.endpoint),
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
+        )
 
         self.assertEquals(
             result.status_code,
@@ -58,7 +65,8 @@ class LanguagesResourceTest(CommonApiTest):
         result = self.app.post(
             self.endpoint,
             data=self.dummy,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         self.assertEquals(
@@ -72,13 +80,15 @@ class LanguagesResourceTest(CommonApiTest):
         self.app.post(
             self.endpoint,
             data=self.dummy,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         result = self.app.post(
             self.endpoint,
             data=self.dummy,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         self.assertEquals(
@@ -92,11 +102,13 @@ class LanguagesResourceTest(CommonApiTest):
         self.app.post(
             self.endpoint,
             data=self.dummy,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         result = self.app.delete(
-            '{}/9999'.format(self.endpoint)
+            '{}/9999'.format(self.endpoint),
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
         self.assertEquals(
             result.status_code,
@@ -106,7 +118,10 @@ class LanguagesResourceTest(CommonApiTest):
 
     def test_delete_no_language(self):
         """test if a invalid language is deletable from languages resource"""
-        result = self.app.delete('{}/44444444'.format(self.endpoint))
+        result = self.app.delete(
+            '{}/44444444'.format(self.endpoint),
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
+        )
 
         self.assertEqual(
             result.status_code,
@@ -119,7 +134,8 @@ class LanguagesResourceTest(CommonApiTest):
         self.app.post(
             self.endpoint,
             data=self.dummy,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         new_doc = json.dumps({'name': 'foobar'})
@@ -127,7 +143,8 @@ class LanguagesResourceTest(CommonApiTest):
         result = self.app.patch(
             '{}/9999'.format(self.endpoint),
             data=new_doc,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(self.token)}
         )
 
         self.assertEquals(

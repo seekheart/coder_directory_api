@@ -5,9 +5,9 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from flask import abort, request, Blueprint
+from flask import abort, request, Blueprint, jsonify
 from coder_directory_api.engines import UsersEngine
-import json
+from coder_directory_api.auth import token_required
 
 # setup the users resource
 api = Blueprint('users', __name__)
@@ -17,6 +17,7 @@ users_engine = UsersEngine()
 
 
 @api.route('/', methods=['GET', 'POST'])
+@token_required
 def users_list()-> tuple:
     """GET and POST Operations for Users Resource.
     For POST, data must be posted in JSON format.
@@ -26,7 +27,7 @@ def users_list()-> tuple:
     """
     if request.method == 'GET':
         users = users_engine.find_all()
-        return json.dumps(users), 200
+        return jsonify(users), 200
     elif request.method == 'POST':
         data = None
         try:
@@ -43,18 +44,19 @@ def users_list()-> tuple:
                            'user_id': user_id
                        }
 
-                return json.dumps(msg), 201
+                return jsonify(msg), 201
             else:
                 msg = {'message': 'Not modified'}
-                return json.dumps(msg), 304
+                return jsonify(msg), 304
         except AttributeError as e:
             msg = {'message': 'User exists!'}
-            return json.dumps(msg), 409
+            return jsonify(msg), 409
     else:
         abort(400)
 
 
 @api.route('/<int:user_id>', methods=['GET', 'DELETE', 'PATCH'])
+@token_required
 def user_single(user_id: int) -> tuple:
     """GET, PATCH, DELETE operations for a single User of Users Resource by user
     id.
@@ -69,9 +71,9 @@ def user_single(user_id: int) -> tuple:
     user = users_engine.find_one(user_id)
     if not user:
         msg = {'message': 'User Not Found'}
-        return json.dumps(msg), 404
+        return jsonify(msg), 404
     if request.method == 'GET':
-        return json.dumps(user), 200
+        return jsonify(user), 200
 
     elif request.method == 'DELETE':
         try:
@@ -82,23 +84,23 @@ def user_single(user_id: int) -> tuple:
             result = False
         if result:
             msg = {'message': 'Accepted'}
-            return json.dumps(msg), 202
+            return jsonify(msg), 202
         else:
             msg = {'message': 'User Not Found'}
-            return json.dumps(msg), 404
+            return jsonify(msg), 404
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
             result = users_engine.edit_one(user_id, data)
         except AttributeError as e:
             msg = {'message': 'Internal Server Error'}
-            return json.dumps(msg), 400
+            return jsonify(msg), 400
 
         if result:
             msg = {'message': 'No Content'}
-            return json.dumps(msg), 204
+            return jsonify(msg), 204
         else:
             msg = {'message': 'Unprocessable Entity'}
-            return json.dumps(msg), 422
+            return jsonify(msg), 422
     else:
         abort(400)

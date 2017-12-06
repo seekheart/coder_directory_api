@@ -20,8 +20,16 @@ class AuthEngineTest(unittest.TestCase):
             'refreshToken': 'efoianeopf',
             'user': 'dummy',
         }
+
+        self.dummy_creds_two = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+            'accessToken': 'asdf',
+            'refreshToken': 'efoianeopf',
+            'user': 'dummy2',
+        }
         try:
-            self.engine.delete_one('dummy')
+            self.engine.add_one(self.dummy_creds)
+            self.engine.delete_one(self.dummy_creds_two)
         except AttributeError:
             pass
 
@@ -29,6 +37,7 @@ class AuthEngineTest(unittest.TestCase):
         """Clean up protocol after each test case"""
         try:
             self.engine.delete_one('dummy')
+            self.engine.delete_one('dummy2')
         except AttributeError:
             pass
         self.engine = None
@@ -40,7 +49,7 @@ class AuthEngineTest(unittest.TestCase):
 
     def test_find_one(self):
         """Test if engine can find a single auth doc given a username"""
-        result = self.engine.find_one('seekheart')
+        result = self.engine.find_one('dummy')
         self.assertTrue(
             result,
             msg='Expected to find a single auth document'
@@ -48,7 +57,7 @@ class AuthEngineTest(unittest.TestCase):
 
         self.assertEqual(
             result['user'],
-            'seekheart',
+            'dummy',
             msg='Expected user to be seekheart'
         )
 
@@ -59,7 +68,7 @@ class AuthEngineTest(unittest.TestCase):
 
     def test_add_one(self):
         """Test if engine can add auth credentials"""
-        result = self.engine.add_one(self.dummy_creds)
+        result = self.engine.add_one(self.dummy_creds_two)
         self.assertTrue(result, msg='Expected creds to be added')
 
     def test_add_one_dupe(self):
