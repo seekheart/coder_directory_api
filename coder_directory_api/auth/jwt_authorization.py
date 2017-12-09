@@ -8,8 +8,7 @@ MIT License, see LICENSE for details.
 import datetime
 import jwt
 import functools
-from flask import request
-import json
+from flask import request, jsonify
 import coder_directory_api.settings as settings
 import coder_directory_api.engines as engines
 import uuid
@@ -43,6 +42,7 @@ def refresh_token(token) -> dict or None:
     if ref_token == token['refresh_token']:
         token['access_token']['exp'] = datetime.datetime.utcnow() + \
                                        datetime.timedelta(minutes=5)
+        result = auth_engine.edit_one(user=user, doc=token)
     else:
         return None
 
@@ -53,8 +53,11 @@ def refresh_token(token) -> dict or None:
                                 token['refresh_token'], secret
                             ).decode('utf-8')
 
-    auth_engine.edit_one(user=user, doc=token)
-    return token
+
+    if result:
+        return token
+    else:
+        return None
 
 
 def check_token(token) -> bool:
@@ -99,16 +102,23 @@ def token_required(f):
 
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        auth = request.headers['Authorization'].split(' ')[1]
+        result = True
         message = {'message': 'Unauthorized'}
-
+        try:
+            auth = request.headers['Authorization'].split(' ')[1]
+        except KeyError:
+            result = False
+            auth = None
         if not auth:
-            return json.dumps(message), 401
+            result = False
 
         state = check_token(auth)
 
         if not state:
-            return json.dumps(message), 401
+            result = False
+
+        if not result:
+            return jsonify(message), 401
 
         return f(*args, **kwargs)
 

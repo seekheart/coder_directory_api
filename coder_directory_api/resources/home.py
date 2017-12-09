@@ -5,8 +5,7 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from flask import Blueprint
-import json
+from flask import Blueprint, jsonify
 
 api = Blueprint('/', __name__)
 
@@ -26,4 +25,4 @@ def home() -> tuple:
         }
     ]
 
-    return json.dumps(available), 200
+    return jsonify(available), 200
