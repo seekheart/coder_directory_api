@@ -6,14 +6,14 @@ MIT License, see LICENSE for details.
 """
 
 import pymongo
-import coder_directory_api.settings as settings
+import settings
 
 
 class MongoEngine:
     def __init__(self, collection: str, key_manager: bool =True) -> None:
         """Constructor for mongodb connection
         Args:
-            collection_name: name of collection to operate on.
+            collection: name of collection to operate on.
             key_manager: sets up an automatic unique id manager, default is on.
         """
 
@@ -29,7 +29,10 @@ class MongoEngine:
             print('Error connecting to database!')
 
         if key_manager:
-            self._max_id = self._set_max_id()
+            try:
+                self._max_id = self._set_max_id()
+            except IndexError:
+                self._max_id = 1
 
     def _set_max_id(self):
         """private method to set the max id based on the collection's state"""
