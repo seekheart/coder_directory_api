@@ -9,8 +9,8 @@ import datetime
 import jwt
 import functools
 from flask import request, jsonify
-import settings
-import engines
+import coder_directory_api.settings as settings
+import coder_directory_api.engines as engines
 import uuid
 
 # set some global helpers

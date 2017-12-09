@@ -5,9 +5,9 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from engines import LanguagesEngine
+from coder_directory_api.engines import LanguagesEngine
 from flask import abort, request, jsonify, Blueprint
-from auth import token_required
+from coder_directory_api.auth import token_required
 
 # setup language resource blueprint
 api = Blueprint('languages', __name__)

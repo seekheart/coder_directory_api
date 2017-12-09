@@ -6,7 +6,7 @@ MIT License, see LICENSE for details.
 """
 
 from .common_test_setup import CommonApiTest
-from coder_directory_api import AuthEngine
+from coder_directory_api.engines import AuthEngine
 import json
 
 

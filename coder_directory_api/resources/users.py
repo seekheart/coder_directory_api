@@ -6,8 +6,8 @@ MIT License, see LICENSE for details.
 """
 
 from flask import abort, request, Blueprint, jsonify
-from engines import UsersEngine
-from auth import token_required
+from coder_directory_api.engines import UsersEngine
+from coder_directory_api.auth import token_required
 
 # setup the users resource
 api = Blueprint('users', __name__)

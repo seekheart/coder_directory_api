@@ -6,7 +6,7 @@ MIT License, see LICENSE for details.
 """
 
 from flask import Blueprint,  jsonify, request
-import engines
+import coder_directory_api.engines as engines
 
 api = Blueprint('register', __name__)
 auth_engine = engines.AuthEngine()

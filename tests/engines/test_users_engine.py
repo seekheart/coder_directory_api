@@ -6,7 +6,7 @@ MIT License, see LICENSE for details
 """
 
 import unittest
-from coder_directory_api import users_engine
+from coder_directory_api.engines import users_engine
 
 
 class UsersEngineTest(unittest.TestCase):

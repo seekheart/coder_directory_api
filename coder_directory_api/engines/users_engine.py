@@ -5,7 +5,7 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details
 """
 
-from engines import MongoEngine
+from .mongo_engine import MongoEngine
 import pymongo
 
 

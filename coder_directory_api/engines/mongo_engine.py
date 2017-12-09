@@ -6,7 +6,7 @@ MIT License, see LICENSE for details.
 """
 
 import pymongo
-import settings
+import coder_directory_api.settings as settings
 
 
 class MongoEngine:

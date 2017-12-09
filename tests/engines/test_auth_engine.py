@@ -7,7 +7,7 @@ MIT License, see LICENSE for details
 
 import unittest
 import datetime
-from coder_directory_api import auth_engine
+from coder_directory_api.engines import auth_engine
 
 
 class AuthEngineTest(unittest.TestCase):
@@ -29,7 +29,6 @@ class AuthEngineTest(unittest.TestCase):
         }
         try:
             self.engine.add_one(self.dummy_creds)
-            self.engine.delete_one(self.dummy_creds_two)
         except AttributeError:
             pass
 
