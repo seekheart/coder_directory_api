@@ -31,7 +31,7 @@ class MongoEngine:
         if key_manager:
             try:
                 self._max_id = self._set_max_id()
-            except IndexError:
+            except:
                 self._max_id = 1
 
     def _set_max_id(self):
