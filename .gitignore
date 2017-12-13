@@ -102,3 +102,6 @@ ENV/
 
 # jet brain ide stuff
 .idea
+
+#secrets
+coder_directory_api/prod_settings.json

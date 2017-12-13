@@ -6,7 +6,9 @@ MIT License, see LICENSE for details.
 """
 
 from .common_test_setup import CommonApiTest
-from coder_directory_api import AuthEngine, make_token, SECRET_KEY
+from coder_directory_api.engines import AuthEngine
+from coder_directory_api.settings import SECRET_KEY
+from coder_directory_api.auth import make_token
 import json
 import jwt
 import datetime

@@ -7,7 +7,7 @@ MIT License, see LICENSE for details.
 
 from .common_test_setup import CommonApiTest
 import json
-from coder_directory_api import LanguagesEngine
+from coder_directory_api.engines import LanguagesEngine
 
 
 class LanguagesResourceTest(CommonApiTest):

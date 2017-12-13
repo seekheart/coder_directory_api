@@ -5,7 +5,9 @@ Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
 
-from coder_directory_api import create_app, AuthEngine, BASE_URL, SECRET_KEY
+from coder_directory_api.api import create_app
+from coder_directory_api.settings import BASE_URL, SECRET_KEY
+from coder_directory_api.engines import AuthEngine
 import datetime
 import jwt
 import uuid
