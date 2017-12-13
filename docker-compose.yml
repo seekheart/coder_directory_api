@@ -1,23 +1,21 @@
 version: "3"
 services:
   coder:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile-app
+    build: .
     ports:
       - "6000:3000"
     environment:
       - HOST=0.0.0.0
       - API_ENV=PROD
-      - SECRET=/coder_directory_api/prod_settings.json
+      - API_SECRET=/app/coder_directory_api/prod_settings.json
     volumes:
-      - ./coder_directory_api/prod_settings.json:/coder_directory_api/prod_settings.json
+      - ./coder_directory_api/prod_settings.json:/app/coder_directory_api/prod_settings.json
     links:
-      - db:mongodb
-
-  db:
+      - mongodb
+  mongodb:
     image: mongo
     volumes:
       - /data:/data/db
     ports:
       - "2000:27017"
+    command: mongod

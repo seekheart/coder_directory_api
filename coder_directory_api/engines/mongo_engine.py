@@ -23,6 +23,7 @@ class MongoEngine:
         self._collection = collection
 
         try:
+            print(self._host)
             self.db = pymongo.MongoClient(self._host, self._port)[self._db_name]
             self.db = self.db.get_collection(self._collection)
         except ConnectionError:
