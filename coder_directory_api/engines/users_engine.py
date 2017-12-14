@@ -13,7 +13,6 @@ class UsersEngine(MongoEngine):
     def __init__(self):
         super(UsersEngine, self).__init__('users')
 
-
     def find_all(self) -> list:
         """finds all users in the collection.
 
@@ -82,9 +81,8 @@ class UsersEngine(MongoEngine):
 
         try:
             self.db.insert_one(user)
-        except AttributeError as e:
+        except AttributeError:
             print('Unable to add user {}'.format(user))
-            print(e)
 
         self._max_id = self._set_max_id()
         return user['_id']
@@ -105,7 +103,7 @@ class UsersEngine(MongoEngine):
         try:
             self.db.update_one(lookup, {'$set': user_dict})
             result = True
-        except AttributeError as e:
+        except AttributeError:
             result = False
 
         return result

@@ -4,7 +4,6 @@ Tests for Coder Directory app
 Copyright (c) 2017 by Mike Tung.
 MIT License, see LICENSE for details.
 """
-import unittest
 from .common_test_setup import CommonApiTest
 
 
