@@ -1,8 +1,8 @@
 # Coder Directory Api
 
-[![Build Status](https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master)](https://travis-ci.org/seekheart/coder_directory_api)
-[![license](https://img.shields.io/badge/license-MIT%20License-blue.svg)](https://img.shields.io/badge/license-MIT%20License-blue.svg)
-[![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
+[![Build Status][travis]](https://travis-ci.org/seekheart/coder_directory_api)
+[![License][license]](https://img.shields.io/badge/license-MIT%20License-blue.svg)
+[![Version][version]](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
 
 
 The Coder Directory Api is a RESTful api developed to provide management of
@@ -20,34 +20,49 @@ coders and programming languages.
 | /languages | Access language resource for GET/POST |
 | /languages/{id} | Access language resource for GET/PATCH/DELETE of 1 language |
 
+With the exception of the `register` and `login` endpoints all resources
+require a jwt to be sent in the `Authorization` header with `Bearer` scheme.
 
 ## Development
 
 In order to run the project on your local machine you will need the following:
 
-- [ ] Python 3.3+
-- [ ] Mongodb
-- [ ] Virtualenv (optional but recommended)
+* Python 3.3+
+* Mongodb
+* Virtualenv (optional but recommended)
 
 Additionally there is also a dockerized version of the application if you wanted
-to just run the app without installing dependencies.
+to just run the app without installing dependencies. In which case you will need
+to install docker and docker-compose.
+
+To spin up the docker containers simply run:
+
+```bash
+# you have to be in the project root folder.
+$ docker-compose build
+$ docker-compose up -d
+
+# You can now curl the app at localhost:6000/<base url or dev by default>
+# To close run the following.
+$ docker-compose down
+```
 
 ## Installation
 
 To begin if you are using virtualenv you can run:
 
 ```bash
-virtualenv -p <path to python3> venv
-source venv/bin/activate
+$ virtualenv -p <path to python3> venv
+$ source venv/bin/activate
 ```
-
+T
 This will spin up a virtual environment with python3 as your default python.
 
 To install the packages and dependencies of the project run the following
 at the project root:
 
 ```bash
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 ## Running the app
@@ -70,7 +85,8 @@ concurrent calls will be allowed.
 ### SECRET file
 Your secret file should include mongo credentials 
 `[db_host, db_port, db_name]` and a `secretKey` to use for app
-signatures for JWT.
+signatures for JWT. 
+Included in the project is an example setup file: `dev_settings.json`
 
 
 ## Author
@@ -78,3 +94,7 @@ signatures for JWT.
 * **Mike Tung** - *Main Developer* - [Github]
 
 [Github]: https://github.com/seekheart
+[travis]: https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master
+[license]: https://img.shields.io/badge/license-MIT%20License-blue.svg
+[version]: https://img.shields.io/badge/Version-1.0.0-brightgreen.svg
+
