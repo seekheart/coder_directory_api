@@ -11,6 +11,7 @@ coders and programming languages.
 ## Resources
 
 | Resource | Description |
+| --------- | ---------- |
 | /register | Registers a user/app to use api |
 | /login | Login user to obtain token |
 | /login/token | Send your tokens here to refresh your access before it expires |
