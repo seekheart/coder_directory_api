@@ -9,6 +9,7 @@ from flask import Blueprint, jsonify
 
 api = Blueprint('/', __name__)
 
+
 @api.route('/')
 def home() -> tuple:
     """Home resource returns all available api resources in JSON
@@ -17,11 +18,12 @@ def home() -> tuple:
         Tuple with json containing resources available and http status code.
     """
 
-
     available = [
         {
-            'languages': 'Programming languages resource',
-            'users': 'Users resource'
+            'languages': 'Programming languages resource.',
+            'users': 'Users resource.',
+            'login': 'Login to api for access.',
+            'register': 'Registration route for access to api.'
         }
     ]
 

@@ -9,6 +9,7 @@ from .common_test_setup import CommonApiTest
 import json
 from coder_directory_api.engines import UsersEngine
 
+
 class UsersResourceTest(CommonApiTest):
     def setUp(self):
         """Setup Users Tests"""

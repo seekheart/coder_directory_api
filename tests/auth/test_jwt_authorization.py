@@ -57,7 +57,6 @@ class JwtAuthorizationTest(unittest.TestCase):
             pass
         self.engine = None
 
-
     def test_check_token(self):
         """Test validating a jwt token"""
         result = auth.check_token(
