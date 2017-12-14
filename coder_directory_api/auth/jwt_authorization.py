@@ -53,7 +53,6 @@ def refresh_token(token) -> dict or None:
                                 token['refresh_token'], secret
                             ).decode('utf-8')
 
-
     if result:
         return token
     else:
