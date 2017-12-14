@@ -1,8 +1,8 @@
 # Coder Directory Api
 
 [![Build Status](https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master)](https://travis-ci.org/seekheart/coder_directory_api)
-[![license](https://img.shields.io/badge/license-MIT%20License-blue.svg)]
-[![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)]
+[![license](https://img.shields.io/badge/license-MIT%20License-blue.svg)](https://img.shields.io/badge/license-MIT%20License-blue.svg)
+[![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
 
 
 The Coder Directory Api is a RESTful api developed to provide management of
@@ -77,4 +77,3 @@ signatures for JWT.
 * **Mike Tung** - *Main Developer* - [Github]
 
 [Github]: https://github.com/seekheart
-[travis]: https://travis-ci.org/seekheart/coder_api.svg?branch=dev
