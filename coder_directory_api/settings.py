@@ -15,6 +15,7 @@ SECRET = os.environ.get('API_SECRET', 'coder_directory_api/dev_settings.json')
 ENV = os.environ.get('API_ENV', 'DEV')
 BASE_URL = os.environ.get('API_BASE_URL', '/dev')
 
+
 with open(SECRET, 'r') as s:
     creds = json.load(s)
 
@@ -26,9 +27,15 @@ MONGO = {
 
 SECRET_KEY = creds['secretKey']
 
+GOOGLE_SECRETS = os.environ.get('GOOGLE', None)
+with open(GOOGLE_SECRETS, 'r') as g:
+    google_secrets = json.load(g)
+
+
 if ENV == 'DEV':
     DEBUG = True
     MULTITHREADING = False
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 elif ENV == 'PROD':
     DEBUG = False

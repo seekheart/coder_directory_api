@@ -20,6 +20,7 @@ def create_app() -> Flask:
     """
 
     api = Flask('__name__')
+    api.secret_key = SECRET_KEY
     CORS(api)
     api.wsgi_app = ProxyFix(api.wsgi_app)
     api.url_map.strict_slashes = False
@@ -49,7 +50,9 @@ def register_resources(api, bp, route=None):
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host=HOST,
+    app.run(
+            host=HOST,
             port=PORT,
             debug=DEBUG,
-            threaded=MULTITHREADING)
+            threaded=MULTITHREADING,
+            )

@@ -105,3 +105,4 @@ ENV/
 
 #secrets
 coder_directory_api/prod_settings.json
+/google_secrets.json
