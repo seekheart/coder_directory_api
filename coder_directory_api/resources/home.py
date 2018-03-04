@@ -23,7 +23,8 @@ def home() -> tuple:
             'languages': 'Programming languages resource.',
             'users': 'Users resource.',
             'login': 'Login to api for access.',
-            'register': 'Registration route for access to api.'
+            'register': 'Registration route for access to api.',
+            'google': 'OAuth2 Google sign in for access'
         }
     ]
 

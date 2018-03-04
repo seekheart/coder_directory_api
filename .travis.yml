@@ -15,6 +15,9 @@ install:
 services:
   - mongodb
 
+before_install:
+  - openssl aes-256-cbc -K $encrypted_fedd13c2de32_key -iv $encrypted_fedd13c2de32_iv -in google_secrets.json.enc -out google_secrets.json -d
+
 # Seed the mongodb with some test data
 before_script:
   - bash mock_data/db_init.sh

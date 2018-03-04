@@ -1,3 +1,4 @@
 *.json
 .gitignore
 .travis.yml
+/google_secrets.json

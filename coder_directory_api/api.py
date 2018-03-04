@@ -20,6 +20,7 @@ def create_app() -> Flask:
     """
 
     api = Flask('__name__')
+    api.secret_key = SECRET_KEY
     CORS(api)
     api.wsgi_app = ProxyFix(api.wsgi_app)
     api.url_map.strict_slashes = False

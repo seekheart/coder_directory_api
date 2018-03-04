@@ -13,6 +13,7 @@ from .users import api as users_api
 from .home import api as home_api
 from .login import api as login_api
 from .register import api as register_api
+from .google import api as google_api
 
 # Create a list of resource objects to register in api
 api_resources = [
@@ -20,5 +21,6 @@ api_resources = [
     {'bp': users_api, 'route': 'users'},
     {'bp': home_api, 'route': None},
     {'bp': login_api, 'route': 'login'},
-    {'bp': register_api, 'route': 'register'}
+    {'bp': register_api, 'route': 'register'},
+    {'bp': google_api, 'route': 'google'}
 ]
