@@ -15,12 +15,14 @@ coders and programming languages.
 | /register | Registers a user/app to use api |
 | /login | Login user to obtain token |
 | /login/token | Send your tokens here to refresh your access before it expires |
+| /google | Sign in to google and get access token |
 | /users | Access users resource for GET/POST |
 | /users/{id} | Access users resource for GET/PATCH/DELETE for 1 user |
 | /languages | Access language resource for GET/POST |
 | /languages/{id} | Access language resource for GET/PATCH/DELETE of 1 language |
 
-With the exception of the `register` and `login` endpoints all resources
+
+With the exception of the `register`, `google`, and `login` endpoints all resources
 require a jwt to be sent in the `Authorization` header with `Bearer` scheme.
 
 ## Development
