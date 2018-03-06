@@ -6,9 +6,10 @@ MIT License, see LICENSE for details.
 """
 
 from flask import Blueprint, jsonify, redirect, request
-from coder_directory_api.settings import GOOGLE_SECRETS
+from coder_directory_api.settings import GOOGLE_SECRETS, PORT
 from coder_directory_api.engines.auth_engine import AuthEngine
 import coder_directory_api.auth as auth
+from coder_directory_api.auth import refresh_token
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -27,7 +28,7 @@ flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/userinfo.profile',
     ])
-flow.redirect_uri = 'http://localhost:3000/api/google/callback'
+flow.redirect_uri = 'http://localhost:{}/api/google/callback'.format(PORT)
 authorization_url, state = flow.authorization_url(
     access_type='offline',
     include_granted_scopes='true'
@@ -45,9 +46,18 @@ def google_login() -> redirect:
         redirect to google login page.
     """
     if request.method == 'GET':
-        return redirect(authorization_url)
+        try:
+            auth_token = request.headers['Authorization'].split(' ')[1]
+        except KeyError:
+            return redirect(authorization_url)
+        return refresh_token(auth_token)
+
     elif request.method == 'POST':
         data = request.get_json()
+
+        if not data:
+            return jsonify({'message': 'Missing Google OAuth Token!'}), 400
+
         token = data['token']
         client_id = data['clientId']
 
@@ -60,7 +70,15 @@ def google_login() -> redirect:
             user = auth_engine.find_one(data)
             if not user:
                 return jsonify({'message': 'User not registered!'}), 404
-            return jsonify(user)
+
+            user_tokens = {
+                'user': user['user'],
+                'access_token': user['access_token'],
+                'refresh_token': user['refresh_token']
+            }
+            new_tokens = refresh_token(user_tokens)
+
+            return jsonify(new_tokens)
         else:
             return jsonify({'message': data})
 
