@@ -40,8 +40,8 @@ def login() -> tuple:
 @api.route('/token', methods=['GET', 'POST'])
 def refresh() -> tuple:
     """
-    Refresh token resource allows users to renew their access token before
-    expiration.
+    Refresh token resource allows users to renew their access token with their
+    refresh token.
 
     Returns:
         Tuple with json containing refreshed token or message with http status
@@ -55,7 +55,7 @@ def refresh() -> tuple:
         data = request.json
         payload = auth.refresh_token(data)
         if payload is None:
-            message = {'message': 'Access token has expired please re-login'}
+            message = {'message': 'Bad token'}
             return jsonify(message), 400
 
         return jsonify(payload), 200
