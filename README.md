@@ -3,7 +3,7 @@
 [![Build Status][travis]](https://travis-ci.org/seekheart/coder_directory_api)
 [![License][license]](https://img.shields.io/badge/license-MIT%20License-blue.svg)
 [![Version][version]](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
-
+[![Maintainability][maintain]](https://codeclimate.com/github/seekheart/coder_directory_api/maintainability)
 
 The Coder Directory Api is a RESTful api developed to provide management of
 coders and programming languages.
@@ -105,3 +105,4 @@ In order to use google oauth you will need to register a service account with
 [license]: https://img.shields.io/badge/license-MIT%20License-blue.svg
 [version]: https://img.shields.io/badge/Version-1.1.0-brightgreen.svg
 [google]: https://console.developers.google.com
+[maintain]: https://api.codeclimate.com/v1/badges/47c92b40567f27394cec/maintainability
