@@ -9,12 +9,12 @@ from .common_test_setup import CommonApiTest
 import json
 from coder_directory_api.engines import AuthEngine
 
+
 class GoogleResourceTest(CommonApiTest):
     def setUp(self):
         """Setup Google Tests"""
         super(GoogleResourceTest, self).setUp()
         self.endpoint = '{}/google'.format(self.base_url)
-        self.engine = AuthEngine()
 
     def tearDown(self):
         """Teardown method for Google Tests"""
@@ -26,3 +26,14 @@ class GoogleResourceTest(CommonApiTest):
         self.assertEqual(result.status_code,
                          302,
                          msg='Expected 301 redirect to Google')
+
+    def test_token(self):
+        """Test google oauth with bad OAuth token"""
+        result = self.app.get(self.endpoint,
+                              headers={'Authorization': 'Bearer asdf'})
+
+        self.assertEquals(
+            400,
+            result.status_code,
+            msg='Expected 400 status code'
+        )

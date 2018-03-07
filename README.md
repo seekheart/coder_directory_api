@@ -79,6 +79,7 @@ The following variables need to be set.
 * HOST - host address to run app on, defaults to localhost or 0.0.0.0
 * PORT - port number to run on, defaults to 3000
 * SECRET - path to your secret credentials json file.
+* GOOGLE - path to your google credentials json file.
 
 In addition for `APP_ENV` this variable will determine whether the app outputs
 debug messages if not in `PROD` and whether or not `MULTITHREADING` for 
@@ -91,6 +92,10 @@ signatures for JWT.
 Included in the project is an example setup file: `dev_settings.json`
 
 
+### GOOGLE credentials
+In order to use google oauth you will need to register a service account with
+[google].
+
 ## Author
 
 * **Mike Tung** - *Main Developer* - [Github]
@@ -98,5 +103,5 @@ Included in the project is an example setup file: `dev_settings.json`
 [Github]: https://github.com/seekheart
 [travis]: https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master
 [license]: https://img.shields.io/badge/license-MIT%20License-blue.svg
-[version]: https://img.shields.io/badge/Version-1.0.0-brightgreen.svg
-
+[version]: https://img.shields.io/badge/Version-1.1.0-brightgreen.svg
+[google]: https://console.developers.google.com
