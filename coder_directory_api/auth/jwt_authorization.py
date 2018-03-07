@@ -94,7 +94,7 @@ def check_token(token) -> bool:
             jwt.DecodeError,
             jwt.InvalidTokenError,
             KeyError
-    ):
+    ) as e:
         result = False
     else:
         user = auth_engine.find_one(decoded_token['user'])
@@ -191,8 +191,6 @@ def make_payload(user_doc: dict) -> dict:
         api payload for jwt token.
     """
 
-    access_token = None
-    renew_token = None
     try:
         access_token = user_doc['access_token'].decode('utf-8')
     except AttributeError:
@@ -227,7 +225,7 @@ def make_access_token(user_name: str) -> dict:
             'user': user_name,
             'jti': str(uuid.uuid4()),
             'iat': make_timestamp(),
-            'exp': datetime.datetime.now() + expire_time
+            'exp': datetime.datetime.utcnow() + expire_time
         },
         secret
     )
@@ -248,7 +246,7 @@ def make_refresh_token(user_name: str) -> dict:
         {
             'iss': 'coder directory',
             'sub': user_name,
-            'created': datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+            'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
             'jti': str(uuid.uuid4()),
             'iat': make_timestamp(),
         },
