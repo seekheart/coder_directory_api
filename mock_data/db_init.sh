@@ -2,7 +2,7 @@
 set -e
 
 echo Dropping database...
-mongo --eval "db.dropDatabase()"
+mongo coder --eval "db.dropDatabase()"
 echo Database dropped!
 
 echo Seeding user data...
