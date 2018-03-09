@@ -104,7 +104,7 @@ In order to use google oauth you will need to register a service account with
 [Github]: https://github.com/seekheart
 [travis]: https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master
 [license]: https://img.shields.io/badge/license-MIT%20License-blue.svg
-[version]: https://img.shields.io/badge/Version-1.1.0-brightgreen.svg
+[version]: https://img.shields.io/badge/Version-1.1.1-brightgreen.svg
 [google]: https://console.developers.google.com
 [maintain]: https://api.codeclimate.com/v1/badges/47c92b40567f27394cec/maintainability
 [coverage]: https://coveralls.io/repos/github/seekheart/coder_directory_api/badge.svg?branch=master
