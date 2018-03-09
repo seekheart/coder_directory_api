@@ -31,29 +31,23 @@ def refresh_token(token) -> dict or None:
     """
     user = token['user']
     user_refresh_token = token['refresh_token']
-    ref_token = None
 
     try:
-        jwt.decode(token['access_token'], secret)
         jwt.decode(token['refresh_token'], secret)
-    except jwt.ExpiredSignatureError as e:
-        pass
     except (jwt.DecodeError, jwt.InvalidTokenError) as e:
         return None
 
     if user:
         ref_token = auth_engine.find_one(user=user)
+    else:
+        return None
 
     ref_token = ref_token['refresh_token']
 
     try:
         ref_token = ref_token.decode('utf-8')
     except AttributeError:
-        pass
-    try:
-        user_refresh_token = user_refresh_token.decode('utf-8')
-    except AttributeError:
-        pass
+        return None
 
     if ref_token == user_refresh_token:
         new_access_token = make_access_token(user)
