@@ -1,0 +1,4 @@
+[report]
+omit =
+    */venv/*
+    */mock_data

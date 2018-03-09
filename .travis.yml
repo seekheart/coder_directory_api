@@ -31,7 +31,7 @@ before_script:
 
 # Run the test suite
 script:
-  - coverage run -m nose tests
+  - nosetests --with-coverage --cover-package=coder_directory_api
 
 after_success:
   - coveralls
