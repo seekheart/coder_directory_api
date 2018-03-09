@@ -1,49 +1,35 @@
 env:
   global:
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - CC_TEST_REPORTER_ID=5fcffa3ecf8aa57eefeb35fceff9cd300db4af96a4287dc29e1b1a12ad46eb29
-# These are the versions of our backend to be supported
 language: python
 python:
   - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
-
-# install dependencies, for python3.4 setuptools needs to be upgraded first
 install:
   - "pip install -U setuptools"
   - "pip install -r requirements.txt"
   - "pip install coveralls"
-
-# we use mongodb as our database
 services:
   - mongodb
-
 before_install:
   - openssl aes-256-cbc -K $encrypted_fedd13c2de32_key -iv $encrypted_fedd13c2de32_iv -in google_secrets.json.enc -out google_secrets.json -d
-
-# Seed the mongodb with some test data, and setup test coverage reporters
 before_script:
   - bash mock_data/db_init.sh
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-
-# Run the test suite
 script:
-  - coverage run -m nose tests
-
+  - nosetests --with-coverage --cover-package=coder_directory_api
 after_success:
   - coveralls
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-
-# notify if there is a change in build status
 notification:
   email:
     on_success: change
     on_failure: change
-
-# monitor only these branches
 branches:
   only:
     - master
