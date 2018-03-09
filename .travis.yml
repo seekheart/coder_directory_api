@@ -10,6 +10,7 @@ python:
 install:
   - "pip install -U setuptools"
   - "pip install -r requirements.txt"
+  - "pip install coveralls"
 
 # we use mongodb as our database
 services:
@@ -24,7 +25,10 @@ before_script:
 
 # Run the test suite
 script:
-  - nosetests
+  - coverage run -m nose tests
+
+after_success:
+  - coveralls
 
 # notify if there is a change in build status
 notification:
