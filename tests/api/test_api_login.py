@@ -7,11 +7,8 @@ MIT License, see LICENSE for details.
 
 from .common_test_setup import CommonApiTest
 from coder_directory_api.engines import AuthEngine
-from coder_directory_api.settings import SECRET_KEY
 from coder_directory_api.auth import make_token
 import json
-import jwt
-import datetime
 
 
 class LoginResourceTest(CommonApiTest):
@@ -99,8 +96,8 @@ class LoginResourceTest(CommonApiTest):
         )
 
         self.assertEqual(
-            result.status_code,
             200,
+            result.status_code,
             msg='Expected status code to be 200'
         )
 
@@ -111,18 +108,10 @@ class LoginResourceTest(CommonApiTest):
             msg='Expected payload of 4 keys to return'
         )
 
-    def test_refresh_expired_token(self):
+    def test_bad_token(self):
         """Test if POST request will bounce bad tokens"""
         dummy = json.loads(self.dummy)
-
-        dummy['access_token'] = {
-            'iss': 'coder directory',
-            'user': dummy['user'],
-            'exp': datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
-        }
-        dummy['access_token'] = jwt.encode(
-            dummy['access_token'], SECRET_KEY
-        ).decode('utf-8')
+        dummy['refresh_token'] = None
         dummy = json.dumps(dummy)
 
         result = self.app.post(

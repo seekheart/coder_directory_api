@@ -8,8 +8,10 @@ services:
       - HOST=0.0.0.0
       - API_ENV=PROD
       - API_SECRET=/app/coder_directory_api/prod_settings.json
+      - GOOGLE=/app/google_secrets.json
     volumes:
       - ./coder_directory_api/prod_settings.json:/app/coder_directory_api/prod_settings.json
+      - ./google_secrets.json:/app/google_secrets.json
     links:
       - mongodb
   mongodb:

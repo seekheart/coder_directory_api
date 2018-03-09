@@ -3,7 +3,8 @@
 [![Build Status][travis]](https://travis-ci.org/seekheart/coder_directory_api)
 [![License][license]](https://img.shields.io/badge/license-MIT%20License-blue.svg)
 [![Version][version]](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
-
+[![Maintainability][maintain]](https://codeclimate.com/github/seekheart/coder_directory_api/maintainability)
+[![Coverage Status][coverage]](https://coveralls.io/github/seekheart/coder_directory_api?branch=master)
 
 The Coder Directory Api is a RESTful api developed to provide management of
 coders and programming languages.
@@ -15,12 +16,14 @@ coders and programming languages.
 | /register | Registers a user/app to use api |
 | /login | Login user to obtain token |
 | /login/token | Send your tokens here to refresh your access before it expires |
+| /google | Sign in to google and get access token |
 | /users | Access users resource for GET/POST |
 | /users/{id} | Access users resource for GET/PATCH/DELETE for 1 user |
 | /languages | Access language resource for GET/POST |
 | /languages/{id} | Access language resource for GET/PATCH/DELETE of 1 language |
 
-With the exception of the `register` and `login` endpoints all resources
+
+With the exception of the `register`, `google`, and `login` endpoints all resources
 require a jwt to be sent in the `Authorization` header with `Bearer` scheme.
 
 ## Development
@@ -77,6 +80,7 @@ The following variables need to be set.
 * HOST - host address to run app on, defaults to localhost or 0.0.0.0
 * PORT - port number to run on, defaults to 3000
 * SECRET - path to your secret credentials json file.
+* GOOGLE - path to your google credentials json file.
 
 In addition for `APP_ENV` this variable will determine whether the app outputs
 debug messages if not in `PROD` and whether or not `MULTITHREADING` for 
@@ -89,6 +93,10 @@ signatures for JWT.
 Included in the project is an example setup file: `dev_settings.json`
 
 
+### GOOGLE credentials
+In order to use google oauth you will need to register a service account with
+[google].
+
 ## Author
 
 * **Mike Tung** - *Main Developer* - [Github]
@@ -96,5 +104,7 @@ Included in the project is an example setup file: `dev_settings.json`
 [Github]: https://github.com/seekheart
 [travis]: https://travis-ci.org/seekheart/coder_directory_api.svg?branch=master
 [license]: https://img.shields.io/badge/license-MIT%20License-blue.svg
-[version]: https://img.shields.io/badge/Version-1.0.0-brightgreen.svg
-
+[version]: https://img.shields.io/badge/Version-1.1.0-brightgreen.svg
+[google]: https://console.developers.google.com
+[maintain]: https://api.codeclimate.com/v1/badges/47c92b40567f27394cec/maintainability
+[coverage]: https://coveralls.io/repos/github/seekheart/coder_directory_api/badge.svg?branch=master

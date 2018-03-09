@@ -16,6 +16,7 @@ import uuid
 # set some global helpers
 auth_engine = engines.AuthEngine()
 secret = settings.SECRET_KEY
+expire_time = datetime.timedelta(minutes=5)
 
 
 def refresh_token(token) -> dict or None:
@@ -28,33 +29,42 @@ def refresh_token(token) -> dict or None:
     Returns:
         refreshed jwt token payload.
     """
+    user = token['user']
+    user_refresh_token = token['refresh_token']
 
     try:
-        user = token['user']
-        token['access_token'] = jwt.decode(token['access_token'], secret)
-        token['refresh_token'] = jwt.decode(token['refresh_token'], secret)
-    except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError):
+        jwt.decode(token['refresh_token'], secret)
+    except (jwt.DecodeError, jwt.InvalidTokenError) as e:
         return None
 
-    ref_token = auth_engine.find_one(user=user)
-    ref_token = ref_token['refresh_token']
-
-    if ref_token == token['refresh_token']:
-        token['access_token']['exp'] = datetime.datetime.utcnow() + \
-                                       datetime.timedelta(minutes=5)
-        result = auth_engine.edit_one(user=user, doc=token)
+    if user:
+        ref_token = auth_engine.find_one(user=user)
     else:
         return None
 
-    token['access_token'] = jwt.encode(
-                                token['access_token'], secret
-                            ).decode('utf-8')
-    token['refresh_token'] = jwt.encode(
-                                token['refresh_token'], secret
-                            ).decode('utf-8')
+    ref_token = ref_token['refresh_token']
+
+    try:
+        ref_token = ref_token.decode('utf-8')
+    except AttributeError:
+        return None
+
+    if ref_token == user_refresh_token:
+        new_access_token = make_access_token(user)
+        result = auth_engine.edit_one(
+            user=user,
+            doc={'access_token': new_access_token}
+        )
+    else:
+        return None
 
     if result:
-        return token
+        user_doc = {
+            'user': user,
+            'access_token': new_access_token,
+            'refresh_token': token['refresh_token']
+        }
+        return make_payload(user_doc=user_doc)
     else:
         return None
 
@@ -78,7 +88,7 @@ def check_token(token) -> bool:
             jwt.DecodeError,
             jwt.InvalidTokenError,
             KeyError
-    ):
+    ) as e:
         result = False
     else:
         user = auth_engine.find_one(decoded_token['user'])
@@ -136,21 +146,8 @@ def make_token(user: str) -> dict:
         for unauthenticated clients.
     """
 
-    renew_token = {
-        'iss': 'coder directory',
-        'sub': user,
-        'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
-        'jti': str(uuid.uuid4()),
-        'iat': make_timestamp(),
-    }
-
-    access_token = {
-        'iss': 'coder directory',
-        'user': user,
-        'jti': str(uuid.uuid4()),
-        'iat': make_timestamp(),
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
-    }
+    renew_token = make_refresh_token(user)
+    access_token = make_access_token(user)
 
     tokens = {
         'access_token': access_token,
@@ -158,14 +155,12 @@ def make_token(user: str) -> dict:
     }
 
     auth_engine.edit_one(user=user, doc=tokens)
-
-    payload = {
+    user_doc = {
         'user': user,
-        'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
-        'access_token': jwt.encode(access_token, secret).decode('utf-8'),
-        'refresh_token': jwt.encode(renew_token, secret).decode('utf-8')
+        'access_token': tokens['access_token'],
+        'refresh_token': tokens['refresh_token']
     }
-
+    payload = make_payload(user_doc=user_doc)
     return payload
 
 
@@ -178,3 +173,75 @@ def make_timestamp() -> int:
     """
     date = int(datetime.datetime.utcnow().strftime('%s')) * 1000
     return date
+
+
+def make_payload(user_doc: dict) -> dict:
+    """
+    Helper function to make payload for jwt tokens.
+    Args:
+        user_doc: dictionary containing user, access_token, refresh_token
+
+    Returns:
+        api payload for jwt token.
+    """
+
+    try:
+        access_token = user_doc['access_token'].decode('utf-8')
+    except AttributeError:
+        access_token = user_doc['access_token']
+
+    try:
+        renew_token = user_doc['refresh_token'].decode('utf-8')
+    except AttributeError:
+        renew_token = user_doc['refresh_token']
+    return {
+        'user': user_doc['user'],
+        'created': datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+        'expires_in': expire_time.seconds,
+        'access_token': access_token,
+        'refresh_token': renew_token
+    }
+
+
+def make_access_token(user_name: str) -> dict:
+    """
+    Helper function to make the access token.
+
+    Args:
+        user_name: username to make token for.
+
+    Returns:
+        encrypted jwt access token
+    """
+    return jwt.encode(
+        {
+            'iss': 'coder directory',
+            'user': user_name,
+            'jti': str(uuid.uuid4()),
+            'iat': make_timestamp(),
+            'exp': datetime.datetime.utcnow() + expire_time
+        },
+        secret
+    )
+
+
+def make_refresh_token(user_name: str) -> dict:
+    """
+    Helper function to make refresh token.
+
+    Args:
+        user_name: username to make token for.
+
+    Returns:
+        encrypted jwt refresh token.
+    """
+
+    return jwt.encode(
+        {
+            'iss': 'coder directory',
+            'sub': user_name,
+            'created': datetime.datetime.utcnow().strftime('%m/%d/%Y %H:%M:%S'),
+            'jti': str(uuid.uuid4()),
+            'iat': make_timestamp(),
+        },
+        secret)
